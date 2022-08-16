@@ -960,7 +960,10 @@ namespace NoxShared
                 {
                     Waypoint wp = new Waypoint(rdr.BaseStream, this);
                     Add(wp);
-                    num_wp.Add(wp.Number, wp);
+                    if (!num_wp.Contains(wp.Number))
+                    {
+                      num_wp.Add(wp.Number, wp);
+                    }
                 }
                 foreach (Waypoint wp in this)
                 {
