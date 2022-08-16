@@ -339,6 +339,7 @@ namespace MapEditor.render
                 //if(tt.Name == "SentryGlobe")113055
                 //MessageBox.Show(index.ToString());
                 result = mapRenderer.VideoBag.GetBitmap(index);
+                result.Save("e:\\test.bmp");
                 drawOffsetX = mapRenderer.VideoBag.DrawOffsets[index][0];
                 drawOffsetY = mapRenderer.VideoBag.DrawOffsets[index][1];
             }
