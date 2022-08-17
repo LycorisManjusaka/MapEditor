@@ -54,7 +54,9 @@ namespace MapEditor
         public Point copyPoint;
         public bool UpdateCanvasOKMiniMap = true;
         public static int[] directions = new int[8] { 0, 6, 2, 7, 1, 4, 5, 3 };
-        public List<PointF> PolyPointOffset = new List<PointF>();
+    private ContextMenuStrip cmsObjectSelect;
+    private ToolStripMenuItem selectBySeparationPatternToolStripMenuItem;
+    public List<PointF> PolyPointOffset = new List<PointF>();
         private Map Map
         {
             get
@@ -3645,6 +3647,7 @@ namespace MapEditor
             this.objectGroup = new System.Windows.Forms.GroupBox();
             this.chkRandomize = new System.Windows.Forms.CheckBox();
             this.SelectObjectBtn = new System.Windows.Forms.RadioButton();
+            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.objectPreview = new System.Windows.Forms.PictureBox();
             this.select45Box = new System.Windows.Forms.CheckBox();
             this.Picker = new System.Windows.Forms.CheckBox();
@@ -3675,9 +3678,10 @@ namespace MapEditor
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.UndoTimer = new System.Windows.Forms.Timer(this.components);
             this.RedoTimer = new System.Windows.Forms.Timer(this.components);
-            this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmrFade = new System.Windows.Forms.Timer(this.components);
             this.tmrFadeTicker = new System.Windows.Forms.Timer(this.components);
+            this.cmsObjectSelect = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.selectBySeparationPatternToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.statusMode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusLocation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMapItem)).BeginInit();
@@ -3698,6 +3702,7 @@ namespace MapEditor
             this.groupMapCopy.SuspendLayout();
             this.scrollPanel.SuspendLayout();
             this.mapPanel.SuspendLayout();
+            this.cmsObjectSelect.SuspendLayout();
             this.SuspendLayout();
             // 
             // contextMenuDelete
@@ -4280,6 +4285,7 @@ namespace MapEditor
             // 
             this.SelectObjectBtn.Appearance = System.Windows.Forms.Appearance.Button;
             this.SelectObjectBtn.BackColor = System.Drawing.Color.LightGray;
+            this.SelectObjectBtn.ContextMenuStrip = this.cmsObjectSelect;
             this.SelectObjectBtn.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.SelectObjectBtn.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.SelectObjectBtn.Location = new System.Drawing.Point(106, 221);
@@ -4292,6 +4298,14 @@ namespace MapEditor
             this.toolTip1.SetToolTip(this.SelectObjectBtn, "Selecting Objects (Switch: ~)");
             this.SelectObjectBtn.UseVisualStyleBackColor = false;
             this.SelectObjectBtn.CheckedChanged += new System.EventHandler(this.ObjectModesChanged);
+            // 
+            // contextMenuStrip
+            // 
+            this.contextMenuStrip.Name = "contextMenuStrip";
+            this.contextMenuStrip.Size = new System.Drawing.Size(61, 4);
+            this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
+            this.contextMenuStrip.Opened += new System.EventHandler(this.contextMenu_Popup);
+            this.contextMenuStrip.Click += new System.EventHandler(this.contextMenuStrip_Open);
             // 
             // objectPreview
             // 
@@ -4625,14 +4639,6 @@ namespace MapEditor
             this.RedoTimer.Interval = 120;
             this.RedoTimer.Tick += new System.EventHandler(this.RedoTimer_Tick);
             // 
-            // contextMenuStrip
-            // 
-            this.contextMenuStrip.Name = "contextMenuStrip";
-            this.contextMenuStrip.Size = new System.Drawing.Size(61, 4);
-            this.contextMenuStrip.Opening += new System.ComponentModel.CancelEventHandler(this.contextMenuStrip1_Opening);
-            this.contextMenuStrip.Opened += new System.EventHandler(this.contextMenu_Popup);
-            this.contextMenuStrip.Click += new System.EventHandler(this.contextMenuStrip_Open);
-            // 
             // tmrFade
             // 
             this.tmrFade.Interval = 7000;
@@ -4642,6 +4648,20 @@ namespace MapEditor
             // 
             this.tmrFadeTicker.Interval = 75;
             this.tmrFadeTicker.Tick += new System.EventHandler(this.tmrFadeTicker_Tick);
+            // 
+            // cmsObjectSelect
+            // 
+            this.cmsObjectSelect.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.selectBySeparationPatternToolStripMenuItem});
+            this.cmsObjectSelect.Name = "cmsObjectSelect";
+            this.cmsObjectSelect.Size = new System.Drawing.Size(231, 26);
+            // 
+            // selectBySeparationPatternToolStripMenuItem
+            // 
+            this.selectBySeparationPatternToolStripMenuItem.Name = "selectBySeparationPatternToolStripMenuItem";
+            this.selectBySeparationPatternToolStripMenuItem.Size = new System.Drawing.Size(230, 22);
+            this.selectBySeparationPatternToolStripMenuItem.Text = "Select by Separation Pattern...";
+            this.selectBySeparationPatternToolStripMenuItem.Click += new System.EventHandler(this.selectBySeparationPatternToolStripMenuItem_Click);
             // 
             // MapView
             // 
@@ -4674,12 +4694,19 @@ namespace MapEditor
             this.groupMapCopy.PerformLayout();
             this.scrollPanel.ResumeLayout(false);
             this.mapPanel.ResumeLayout(false);
+            this.cmsObjectSelect.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
         #endregion
-    }
-    public static class ExtensionColor
+
+        private void selectBySeparationPatternToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dialog = new PatternSelectDialog();
+            dialog.ShowDialog();
+        }
+  }
+  public static class ExtensionColor
     {
         public static Color Interpolate(this Color source, Color target, double percent)
         {
