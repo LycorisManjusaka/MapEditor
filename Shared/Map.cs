@@ -962,7 +962,7 @@ namespace NoxShared
                     Add(wp);
                     if (!num_wp.Contains(wp.Number))
                     {
-                      num_wp.Add(wp.Number, wp);
+                        num_wp.Add(wp.Number, wp);
                     }
                 }
                 foreach (Waypoint wp in this)
