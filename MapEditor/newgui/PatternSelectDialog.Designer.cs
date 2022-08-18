@@ -34,6 +34,7 @@ namespace MapEditor.newgui
             this.label2 = new System.Windows.Forms.Label();
             this.tbPatternString = new System.Windows.Forms.TextBox();
             this.btnSelect = new System.Windows.Forms.Button();
+            this.btnClearSelection = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pbPreview)).BeginInit();
             this.SuspendLayout();
             // 
@@ -63,9 +64,9 @@ namespace MapEditor.newgui
             this.label2.AutoSize = true;
             this.label2.Location = new System.Drawing.Point(12, 215);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 13);
+            this.label2.Size = new System.Drawing.Size(169, 13);
             this.label2.TabIndex = 2;
-            this.label2.Text = "Pattern String:";
+            this.label2.Text = "Pattern String (Use S N W E only):";
             // 
             // tbPatternString
             // 
@@ -81,18 +82,31 @@ namespace MapEditor.newgui
             // btnSelect
             // 
             this.btnSelect.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSelect.Location = new System.Drawing.Point(128, 257);
+            this.btnSelect.Location = new System.Drawing.Point(15, 257);
             this.btnSelect.Name = "btnSelect";
             this.btnSelect.Size = new System.Drawing.Size(75, 23);
             this.btnSelect.TabIndex = 4;
             this.btnSelect.Text = "Select";
             this.btnSelect.UseVisualStyleBackColor = true;
+            this.btnSelect.Click += new System.EventHandler(this.btnSelect_Click);
+            // 
+            // btnClearSelection
+            // 
+            this.btnClearSelection.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnClearSelection.Location = new System.Drawing.Point(95, 257);
+            this.btnClearSelection.Name = "btnClearSelection";
+            this.btnClearSelection.Size = new System.Drawing.Size(107, 23);
+            this.btnClearSelection.TabIndex = 4;
+            this.btnClearSelection.Text = "Clear Selection";
+            this.btnClearSelection.UseVisualStyleBackColor = true;
+            this.btnClearSelection.Click += new System.EventHandler(this.btnClearSelection_Click);
             // 
             // PatternSelectDialog
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(215, 286);
+            this.Controls.Add(this.btnClearSelection);
             this.Controls.Add(this.btnSelect);
             this.Controls.Add(this.tbPatternString);
             this.Controls.Add(this.label2);
@@ -106,6 +120,7 @@ namespace MapEditor.newgui
             this.ShowInTaskbar = false;
             this.Text = "Select Objects by Pattern";
             this.TopMost = true;
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.PatternSelectDialog_FormClosing);
             ((System.ComponentModel.ISupportInitialize)(this.pbPreview)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -119,5 +134,6 @@ namespace MapEditor.newgui
     private System.Windows.Forms.Label label2;
     private System.Windows.Forms.TextBox tbPatternString;
     private System.Windows.Forms.Button btnSelect;
-  }
+        private System.Windows.Forms.Button btnClearSelection;
+    }
 }

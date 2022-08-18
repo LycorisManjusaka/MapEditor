@@ -2062,6 +2062,7 @@ namespace MapEditor
             this.menuHelpLink2 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator5 = new System.Windows.Forms.ToolStripSeparator();
             this.menuHelpLink3 = new System.Windows.Forms.ToolStripMenuItem();
+            this.menuHelpLink5 = new System.Windows.Forms.ToolStripMenuItem();
             this.menuHelpLink4 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripSeparator6 = new System.Windows.Forms.ToolStripSeparator();
             this.menuAbout = new System.Windows.Forms.ToolStripMenuItem();
@@ -2078,7 +2079,6 @@ namespace MapEditor
             this.menuDrawTeleportPaths = new System.Windows.Forms.ToolStripMenuItem();
             this.menuDrawWaypoints = new System.Windows.Forms.ToolStripMenuItem();
             this.menuColorSpecialWalls = new System.Windows.Forms.ToolStripMenuItem();
-            this.menuHelpLink5 = new System.Windows.Forms.ToolStripMenuItem();
             this.mapInfoTab.SuspendLayout();
             this.groupMapInfoTab.SuspendLayout();
             this.minimapTab.SuspendLayout();
@@ -3288,7 +3288,7 @@ namespace MapEditor
             // menuNew
             // 
             this.menuNew.Name = "menuNew";
-            this.menuNew.Size = new System.Drawing.Size(189, 22);
+            this.menuNew.Size = new System.Drawing.Size(190, 22);
             this.menuNew.Text = "New";
             this.menuNew.Click += new System.EventHandler(this.menuNew_Click);
             // 
@@ -3296,21 +3296,21 @@ namespace MapEditor
             // 
             this.menuOpen.Name = "menuOpen";
             this.menuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.menuOpen.Size = new System.Drawing.Size(189, 22);
+            this.menuOpen.Size = new System.Drawing.Size(190, 22);
             this.menuOpen.Text = "Open...";
             this.menuOpen.Click += new System.EventHandler(this.menuOpen_Click);
             // 
             // menuRecent
             // 
             this.menuRecent.Name = "menuRecent";
-            this.menuRecent.Size = new System.Drawing.Size(189, 22);
+            this.menuRecent.Size = new System.Drawing.Size(190, 22);
             this.menuRecent.Text = "Recent";
             this.menuRecent.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.menuRecent_DropDownItemClicked);
             // 
             // menuInstallMap
             // 
             this.menuInstallMap.Name = "menuInstallMap";
-            this.menuInstallMap.Size = new System.Drawing.Size(189, 22);
+            this.menuInstallMap.Size = new System.Drawing.Size(190, 22);
             this.menuInstallMap.Text = "Install Map";
             this.menuInstallMap.Click += new System.EventHandler(this.menuInstallMap_Click);
             // 
@@ -3318,7 +3318,7 @@ namespace MapEditor
             // 
             this.menuSave.Name = "menuSave";
             this.menuSave.ShortcutKeys = System.Windows.Forms.Keys.F2;
-            this.menuSave.Size = new System.Drawing.Size(189, 22);
+            this.menuSave.Size = new System.Drawing.Size(190, 22);
             this.menuSave.Text = "Save";
             this.menuSave.Click += new System.EventHandler(this.menuSave_Click);
             // 
@@ -3326,28 +3326,28 @@ namespace MapEditor
             // 
             this.menuSaveAs.Name = "menuSaveAs";
             this.menuSaveAs.ShortcutKeys = System.Windows.Forms.Keys.F3;
-            this.menuSaveAs.Size = new System.Drawing.Size(189, 22);
+            this.menuSaveAs.Size = new System.Drawing.Size(190, 22);
             this.menuSaveAs.Text = "Save As...";
             this.menuSaveAs.Click += new System.EventHandler(this.menuSaveAs_Click);
             // 
             // menuSaveNXZOnly
             // 
             this.menuSaveNXZOnly.Name = "menuSaveNXZOnly";
-            this.menuSaveNXZOnly.Size = new System.Drawing.Size(189, 22);
+            this.menuSaveNXZOnly.Size = new System.Drawing.Size(190, 22);
             this.menuSaveNXZOnly.Text = "Save NXZ Only";
             this.menuSaveNXZOnly.Click += new System.EventHandler(this.menuSaveNXZOnly_Click);
             // 
             // toolStripSeparator1
             // 
             this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator1.Size = new System.Drawing.Size(187, 6);
             // 
             // menuImportSave
             // 
             this.menuImportSave.Enabled = false;
             this.menuImportSave.Name = "menuImportSave";
             this.menuImportSave.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
-            this.menuImportSave.Size = new System.Drawing.Size(189, 22);
+            this.menuImportSave.Size = new System.Drawing.Size(190, 22);
             this.menuImportSave.Text = "Import + Save";
             this.menuImportSave.Click += new System.EventHandler(this.menuImportSave_Click);
             // 
@@ -3355,7 +3355,7 @@ namespace MapEditor
             // 
             this.menuImportScript.Name = "menuImportScript";
             this.menuImportScript.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.I)));
-            this.menuImportScript.Size = new System.Drawing.Size(189, 22);
+            this.menuImportScript.Size = new System.Drawing.Size(190, 22);
             this.menuImportScript.Text = "Import Script...";
             this.menuImportScript.Click += new System.EventHandler(this.menuImportScript_Click);
             // 
@@ -3363,27 +3363,27 @@ namespace MapEditor
             // 
             this.menuExportScript.Name = "menuExportScript";
             this.menuExportScript.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
-            this.menuExportScript.Size = new System.Drawing.Size(189, 22);
+            this.menuExportScript.Size = new System.Drawing.Size(190, 22);
             this.menuExportScript.Text = "Export Script...";
             this.menuExportScript.Click += new System.EventHandler(this.menuExportScript_Click);
             // 
             // menuExportNativeScript
             // 
             this.menuExportNativeScript.Name = "menuExportNativeScript";
-            this.menuExportNativeScript.Size = new System.Drawing.Size(189, 22);
+            this.menuExportNativeScript.Size = new System.Drawing.Size(190, 22);
             this.menuExportNativeScript.Text = "Export Native Script...";
             this.menuExportNativeScript.Click += new System.EventHandler(this.menuExportNativeScript_Click);
             // 
             // toolStripSeparator2
             // 
             this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(186, 6);
+            this.toolStripSeparator2.Size = new System.Drawing.Size(187, 6);
             // 
             // menuExit
             // 
             this.menuExit.Name = "menuExit";
             this.menuExit.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Alt | System.Windows.Forms.Keys.F4)));
-            this.menuExit.Size = new System.Drawing.Size(189, 22);
+            this.menuExit.Size = new System.Drawing.Size(190, 22);
             this.menuExit.Text = "Exit";
             this.menuExit.Click += new System.EventHandler(this.menuExit_Click);
             // 
@@ -3547,45 +3547,52 @@ namespace MapEditor
             // menuHelpLink1
             // 
             this.menuHelpLink1.Name = "menuHelpLink1";
-            this.menuHelpLink1.Size = new System.Drawing.Size(180, 22);
+            this.menuHelpLink1.Size = new System.Drawing.Size(148, 22);
             this.menuHelpLink1.Text = "Nox Forum";
             this.menuHelpLink1.Click += new System.EventHandler(this.menuHelpLink1_Click);
             // 
             // menuHelpLink2
             // 
             this.menuHelpLink2.Name = "menuHelpLink2";
-            this.menuHelpLink2.Size = new System.Drawing.Size(180, 22);
+            this.menuHelpLink2.Size = new System.Drawing.Size(148, 22);
             this.menuHelpLink2.Text = "Nox Discord";
             this.menuHelpLink2.Click += new System.EventHandler(this.menuHelpLink2_Click);
             // 
             // toolStripSeparator5
             // 
             this.toolStripSeparator5.Name = "toolStripSeparator5";
-            this.toolStripSeparator5.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator5.Size = new System.Drawing.Size(145, 6);
             // 
             // menuHelpLink3
             // 
             this.menuHelpLink3.Name = "menuHelpLink3";
-            this.menuHelpLink3.Size = new System.Drawing.Size(180, 22);
+            this.menuHelpLink3.Size = new System.Drawing.Size(148, 22);
             this.menuHelpLink3.Text = "Game Texts";
             this.menuHelpLink3.Click += new System.EventHandler(this.menuHelpLink3_Click);
+            // 
+            // menuHelpLink5
+            // 
+            this.menuHelpLink5.Name = "menuHelpLink5";
+            this.menuHelpLink5.Size = new System.Drawing.Size(148, 22);
+            this.menuHelpLink5.Text = "Script Wiki";
+            this.menuHelpLink5.Click += new System.EventHandler(this.menuHelpLink5_Click);
             // 
             // menuHelpLink4
             // 
             this.menuHelpLink4.Name = "menuHelpLink4";
-            this.menuHelpLink4.Size = new System.Drawing.Size(180, 22);
+            this.menuHelpLink4.Size = new System.Drawing.Size(148, 22);
             this.menuHelpLink4.Text = "Script 3.0 Wiki";
             this.menuHelpLink4.Click += new System.EventHandler(this.menuHelpLink4_Click);
             // 
             // toolStripSeparator6
             // 
             this.toolStripSeparator6.Name = "toolStripSeparator6";
-            this.toolStripSeparator6.Size = new System.Drawing.Size(177, 6);
+            this.toolStripSeparator6.Size = new System.Drawing.Size(145, 6);
             // 
             // menuAbout
             // 
             this.menuAbout.Name = "menuAbout";
-            this.menuAbout.Size = new System.Drawing.Size(180, 22);
+            this.menuAbout.Size = new System.Drawing.Size(148, 22);
             this.menuAbout.Text = "About";
             this.menuAbout.Click += new System.EventHandler(this.menuAbout_Click);
             // 
@@ -3704,13 +3711,6 @@ namespace MapEditor
             this.menuColorSpecialWalls.Size = new System.Drawing.Size(216, 22);
             this.menuColorSpecialWalls.Text = "Color Special Walls";
             this.menuColorSpecialWalls.Click += new System.EventHandler(this.menuColorSpecialWalls_Click);
-            // 
-            // menuHelpLink5
-            // 
-            this.menuHelpLink5.Name = "menuHelpLink5";
-            this.menuHelpLink5.Size = new System.Drawing.Size(180, 22);
-            this.menuHelpLink5.Text = "Script Wiki";
-            this.menuHelpLink5.Click += new System.EventHandler(this.menuHelpLink5_Click);
             // 
             // MainWindow
             // 

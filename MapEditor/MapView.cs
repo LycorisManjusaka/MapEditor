@@ -57,6 +57,7 @@ namespace MapEditor
         private ContextMenuStrip cmsPatternSelect;
         private ToolStripMenuItem patternSelectToolStripMenuItem;
         public List<PointF> PolyPointOffset = new List<PointF>();
+        private PatternSelectDialog patternSelectDialog = new PatternSelectDialog();
         private Map Map
         {
             get
@@ -4703,8 +4704,7 @@ namespace MapEditor
 
         private void patternSelectToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var dialog = new PatternSelectDialog();
-            dialog.ShowDialog();
+            patternSelectDialog.Show();
         }
     }
     public static class ExtensionColor
