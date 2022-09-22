@@ -95,7 +95,12 @@ namespace MapEditor.newgui
 
                         foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
                         {
-                            statusMapItem += string.Format(FORMAT_EDGE_INFO, ThingDb.FloorTileNames[edge.Graphic], edge.Variation, edge.Dir, ThingDb.EdgeTileNames[edge.Edge]);
+                            statusMapItem 
+                                += string.Format(
+                                    FORMAT_EDGE_INFO,
+                                    ThingDb.FloorTileNames[(int)edge.Graphic], 
+                                    edge.Variation, edge.Dir,
+                                    ThingDb.EdgeTileNames[(int)edge.Edge]);
 
                         }
                     }

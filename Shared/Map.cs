@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Collections.Generic;
 using System.Text;
 using System.Reflection;
+using static NoxShared.ThingDb;
 
 namespace NoxShared
 {
@@ -1158,20 +1159,20 @@ namespace NoxShared
             {
                 get
                 {
-                    return GetColor(tilecolors[graphicId]);
+                    return GetColor(tilecolors[(int)graphicId]);
                     //return ThingDb.FloorTiles[graphicId].color;
                 }
             }
             public Point Location;
-            public byte graphicId;
-            public UInt16 Variation;
+            public TileId graphicId;
+            public ushort Variation;
             public ArrayList EdgeTiles = new ArrayList();
 
             public string Graphic
             {
                 get
                 {
-                    return ((ThingDb.Tile)ThingDb.FloorTiles[graphicId]).Name;
+                    return FloorTiles[(int)graphicId].Name;
                 }
             }
 
@@ -1179,18 +1180,19 @@ namespace NoxShared
             {
                 get
                 {
-                    return ((ThingDb.Tile)ThingDb.FloorTiles[graphicId]).Variations;
+                    return FloorTiles[(int)graphicId].Variations;
                 }
             }
 
-            public Tile(Point loc, byte graphic, UInt16 variation, ArrayList edgetiles)
+            public Tile(Point loc, TileId graphic, ushort variation, ArrayList edgetiles)
             {
                 Location = loc;
                 graphicId = graphic; Variation = variation;
                 EdgeTiles = edgetiles;
             }
 
-            public Tile(Point loc, byte graphic, UInt16 variation) : this(loc, graphic, variation, new ArrayList()) { }
+            public Tile(Point loc, TileId graphic, ushort variation) 
+                : this(loc, graphic, variation, new ArrayList()) { }
 
             internal Tile(Stream stream)
             {
@@ -1200,7 +1202,7 @@ namespace NoxShared
             internal void Read(Stream stream)
             {
                 BinaryReader rdr = new BinaryReader(stream);
-                graphicId = rdr.ReadByte();
+                graphicId = (TileId)rdr.ReadByte();
                 Variation = rdr.ReadUInt16();
                 rdr.ReadBytes(2);//these are always null for first tilePair of a blending group (?)
                 for (int numEdgeTiles = rdr.ReadByte(); numEdgeTiles > 0; numEdgeTiles--)
@@ -1212,7 +1214,7 @@ namespace NoxShared
                 BinaryWriter wtr = new BinaryWriter(stream);
 
                 wtr.Write((byte)graphicId);
-                wtr.Write((UInt16)Variation);
+                wtr.Write(Variation);
                 wtr.Write(new byte[2]);//3 nulls
                 wtr.Write((byte)EdgeTiles.Count);
                 foreach (EdgeTile edge in EdgeTiles)
@@ -1222,11 +1224,11 @@ namespace NoxShared
             [Serializable]
             public class EdgeTile//maybe derive from tile?
             {
-                public byte Graphic;
-                public UInt16 Variation;
+                public TileId Graphic;
+                public ushort Variation;
                 public byte unknown1 = 0x00; //Always 00(?)
                 public Direction Dir;
-                public byte Edge;
+                public EdgeId Edge;
 
                 public enum Direction : byte
                 {
@@ -1253,7 +1255,7 @@ namespace NoxShared
                     //TODO: figure out what's up with the different directions
                 }
 
-                public EdgeTile(byte graphic, ushort variation, Direction dir, byte edge)
+                public EdgeTile(TileId graphic, ushort variation, Direction dir, EdgeId edge)
                 {
                     Graphic = graphic; Variation = variation; Dir = dir; Edge = edge;
                 }
@@ -1267,9 +1269,9 @@ namespace NoxShared
                 {
                     BinaryReader rdr = new BinaryReader(stream);
 
-                    Graphic = rdr.ReadByte();
+                    Graphic = (TileId)rdr.ReadByte();
                     Variation = rdr.ReadUInt16();
-                    Edge = rdr.ReadByte();
+                    Edge = (EdgeId)rdr.ReadByte();
                     Dir = (Direction)rdr.ReadByte();
 
                     Debug.WriteLineIf(!Enum.IsDefined(typeof(Direction), (byte)Dir), String.Format("WARNING: edgetile direction {0} is undefined.", (byte)Dir), "MapRead");

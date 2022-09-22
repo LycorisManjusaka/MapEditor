@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Collections.Generic;
 using MapEditor.videobag;
 using NoxShared;
+using static NoxShared.ThingDb;
 
 namespace MapEditor.newgui
 {
@@ -42,7 +43,7 @@ namespace MapEditor.newgui
 
         private int GetSelTileTypeIndex()
         {
-            return ThingDb.EdgeTileNames.IndexOf(sortedEdgeNames[comboEdgeType.SelectedIndex]);
+            return EdgeTileNames.IndexOf(sortedEdgeNames[comboEdgeType.SelectedIndex]);
         }
 
         public void SetMapView(MapView view)
@@ -51,7 +52,7 @@ namespace MapEditor.newgui
             // необходимо чтобы картинки доставать
             videoBag = mapView.MapRenderer.VideoBag;
             // названия плиток сортируем и добавляем в список
-            sortedEdgeNames = new List<string>(ThingDb.EdgeTileNames.ToArray());
+            sortedEdgeNames = new List<string>(EdgeTileNames.ToArray());
             sortedEdgeNames.Sort();
             comboEdgeType.Items.AddRange(sortedEdgeNames.ToArray());
             comboEdgeType.SelectedIndex = 0;
@@ -70,9 +71,9 @@ namespace MapEditor.newgui
             if ((chkAutoVariation.Checked) && (!chkAutoEdge.Checked))
                 edgeDir = GetRandomVariation(edgeDir);
 
-            return new Map.Tile.EdgeTile(coverTile.graphicId, coverTile.Variation, edgeDir, (byte)edgeTypeID);
+            return new Map.Tile.EdgeTile(coverTile.graphicId, coverTile.Variation, edgeDir, (EdgeId)edgeTypeID);
         }
-        private Map.Tile.EdgeTile.Direction GetRandomVariation(Map.Tile.EdgeTile.Direction dir)
+        public static Map.Tile.EdgeTile.Direction GetRandomVariation(Map.Tile.EdgeTile.Direction dir)
         {
             // Variation is actually Direction, 3 variations for N, S, E, W
             var r = new Random();
@@ -99,7 +100,7 @@ namespace MapEditor.newgui
                     return dir;
             }
         }
-        private Map.Tile.EdgeTile.Direction OddRandom(bool north, Random r)
+        private static Map.Tile.EdgeTile.Direction OddRandom(bool north, Random r)
         {
             if (north)
             {

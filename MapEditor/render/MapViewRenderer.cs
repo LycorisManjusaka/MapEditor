@@ -148,7 +148,13 @@ namespace MapEditor.render
                 }
 
                 // достаем картинку
+                if (wri.SpriteIndex == 13138)
+                {
+                    int a = 1;
+                }
+
                 Bitmap bitmap = VideoBag.GetBitmap(wri.SpriteIndex);
+ 
                 BitmapShader shader = null;
                 // тонируем если стена необычная
 

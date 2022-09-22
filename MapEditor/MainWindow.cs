@@ -125,6 +125,10 @@ namespace MapEditor
             if (args.Length > 0)
                 if (File.Exists(args[0])) MapInterface.SwitchMap(args[0]);
             spl.Close();
+
+            //
+            //mapView.cmdCopyAll_Click(this, new EventArgs());
+            //mapView.cmdPasteArea.Checked = true;
         }
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
@@ -146,7 +150,8 @@ namespace MapEditor
             if (mapView.TimeManager.Count == 0)
                 return;
 
-            if (MessageBox.Show("Are you sure you wish to close?", "CLOSING EDITOR!", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
+            if (MessageBox.Show("Are you sure you wish to close?", "CLOSING EDITOR!",
+                MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel)
                 e.Cancel = true;
         }
         protected override void OnClosed(EventArgs e)

@@ -10,6 +10,9 @@ using System.Collections.Generic;
 using MapEditor.MapInt;
 using MapEditor.videobag;
 using NoxShared;
+using static NoxShared.ThingDb;
+using System.IO;
+using MapEditor.Properties;
 
 namespace MapEditor.newgui
 {
@@ -25,7 +28,7 @@ namespace MapEditor.newgui
         private MapView mapView;
         private VideoBagCachedProvider videoBag = null;
         public int tileVariation;
-        private int tileTypeID;
+        private TileId tileTypeID;
         public bool AutoVari
         {
             get { return checkAutoVari.Checked; }
@@ -70,19 +73,19 @@ namespace MapEditor.newgui
             e.Item = item;
         }
 
-        private int GetSelTileTypeIndex()
+        private TileId GetSelTileTypeIndex()
         {
             int selectedIndex = comboTileType.SelectedIndex;
             string tileName = comboTileType.Items[selectedIndex].ToString();
-            int index = ThingDb.FloorTileNames.IndexOf(tileName);
+            TileId index = (TileId)FloorTileNames.IndexOf(tileName);
 
             if (index > 0) return index;
             return 0;
         }
 
-        private List<uint> GetVariationsForType(int ttype)
+        private List<uint> GetVariationsForType(TileId ttype)
         {
-            return ThingDb.FloorTiles[ttype].Variations;
+            return FloorTiles[(int)ttype].Variations;
         }
 
         private void UpdateListView(object sender, EventArgs e)
@@ -145,13 +148,14 @@ namespace MapEditor.newgui
             {
                 int x = loc.X;
                 int y = loc.Y;
-                int cols = ThingDb.FloorTiles[tileTypeID].numCols;
-                int rows = ThingDb.FloorTiles[tileTypeID].numRows;
+                int cols = FloorTiles[(int)tileTypeID].numCols;
+                int rows = FloorTiles[(int)tileTypeID].numRows;
 
-                vari = (ushort)(((x + y) / 2 % cols) + (((y % rows) + 1 + cols - ((x + y) / 2) % cols) % rows) * cols);
+                vari = (ushort)(((x + y) / 2 % cols) + (((y % rows) + 1 + cols 
+                    - ((x + y) / 2) % cols) % rows) * cols);
             }
 
-            return new Map.Tile(loc, (byte)tileTypeID, vari);
+            return new Map.Tile(loc, tileTypeID, vari);
         }
 
         private void ChangeTileType(object sender, EventArgs e)
@@ -211,7 +215,7 @@ namespace MapEditor.newgui
         private void Bucket_CheckedChanged(object sender, EventArgs e)
         {
             if (Bucket.Checked)
-                mapView.mapPanel.Cursor = new Cursor(new System.IO.MemoryStream(Properties.Resources.bucket));
+                mapView.mapPanel.Cursor = new Cursor(new MemoryStream(Resources.bucket));
             else
                 mapView.mapPanel.Cursor = Cursors.Default;
 
@@ -220,7 +224,7 @@ namespace MapEditor.newgui
 
         private int GetSelEdgeTypeIndex()
         {
-            return ThingDb.EdgeTileNames.IndexOf(sortedEdgeNames[edgeBox.SelectedIndex]);
+            return EdgeTileNames.IndexOf(sortedEdgeNames[edgeBox.SelectedIndex]);
         }
 
         private void edgeBox_SelectedIndexChanged(object sender, EventArgs e)

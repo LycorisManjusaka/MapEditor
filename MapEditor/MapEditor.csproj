@@ -132,6 +132,15 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="BitmapExport\Analizer.cs" />
+    <Compile Include="BitmapExport\BitmapExporter.cs" />
+    <Compile Include="BitmapExport\BitmapImporter.cs" />
+    <Compile Include="EdgeRuleForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="EdgeRuleForm.Designer.cs">
+      <DependentUpon>EdgeRuleForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="EditorSettings.Designer.cs">
       <DependentUpon>EditorSettings.settings</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -442,6 +451,9 @@
     <Compile Include="XferGui\XferEditor.cs">
       <SubType>Form</SubType>
     </Compile>
+    <EmbeddedResource Include="EdgeRuleForm.resx">
+      <DependentUpon>EdgeRuleForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Minimap.resx">
       <DependentUpon>Minimap.cs</DependentUpon>
     </EmbeddedResource>

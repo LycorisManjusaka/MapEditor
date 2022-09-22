@@ -15,6 +15,7 @@ using System.Xml;
 using System.Reflection;
 using MapEditor.MapInt;
 using System.IO;
+using static NoxShared.ThingDb;
 
 namespace MapEditor.mapgen
 {
@@ -28,10 +29,10 @@ namespace MapEditor.mapgen
         private string[] tileMaterialNames = ThingDb.FloorTileNames.ToArray();
         private string[] edgeMaterialNames = ThingDb.EdgeTileNames.ToArray();
         private List<Point> tilesScanned = new List<Point>();
-        private int autoedgeIgnoreTile = -1;
+        private TileId autoedgeIgnoreTile = (TileId)255;
         private byte usingWallMaterial = 0;
-        public byte usingTileMaterial = 0;
-        private byte usingEdgeMaterial = 0;
+        public TileId usingTileMaterial = 0;
+        private EdgeId usingEdgeMaterial = 0;
         private byte varcount = 0;
         private int incrementObjectExtent = 2;
         private int nTiles = 0;
@@ -74,7 +75,7 @@ namespace MapEditor.mapgen
         /// </summary>
         public void SetTileMaterial(string materialString)
         {
-            usingTileMaterial = (byte)Array.IndexOf(tileMaterialNames, materialString);
+            usingTileMaterial = (TileId)Array.IndexOf(tileMaterialNames, materialString);
 
         }
 
@@ -91,8 +92,8 @@ namespace MapEditor.mapgen
         /// </summary>
         public void SetEdgeMaterial(string materialString)
         {
-            usingEdgeMaterial = (byte)Array.IndexOf(edgeMaterialNames, materialString);
-            varcount = (byte)ThingDb.EdgeTiles[usingEdgeMaterial].Variations.Count;
+            usingEdgeMaterial = (EdgeId)Array.IndexOf(edgeMaterialNames, materialString);
+            varcount = (byte)EdgeTiles[(byte)usingEdgeMaterial].Variations.Count;
 
         }
 
@@ -103,10 +104,10 @@ namespace MapEditor.mapgen
         {
             if (materialString == null)
             {
-                autoedgeIgnoreTile = -1;
+                autoedgeIgnoreTile = (TileId)255;
                 return;
             }
-            autoedgeIgnoreTile = (byte)Array.IndexOf(tileMaterialNames, materialString);
+            autoedgeIgnoreTile = (TileId)Array.IndexOf(tileMaterialNames, materialString);
         }
 
         public Map.Wall GetWallSnap(int x, int y)
@@ -210,8 +211,8 @@ namespace MapEditor.mapgen
             if (y <= 0) return false;
             Point pt = new Point(x, y);
             bool ok = true;
-            int cols = ThingDb.FloorTiles[usingTileMaterial].numCols;
-            int rows = ThingDb.FloorTiles[usingTileMaterial].numRows;
+            int cols = FloorTiles[(int)usingTileMaterial].numCols;
+            int rows = FloorTiles[(int)usingTileMaterial].numRows;
             ushort vari = (ushort)(((x + y) / 2 % cols) + (((y % rows) + 1 + cols - ((x + y) / 2) % cols) % rows) * cols);
             if (!autovar)
                 vari = (ushort)variation;
@@ -287,7 +288,7 @@ namespace MapEditor.mapgen
 
             int selectedIndex = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.SelectedIndex;
             string tileName = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.Items[selectedIndex].ToString();
-            int indexIgnor = ThingDb.FloorTileNames.IndexOf(tileName);
+            TileId indexIgnor = (TileId)FloorTileNames.IndexOf(tileName);
             autoedgeIgnoreTile = indexIgnor;
             bool? nUpBlocked = null;
             bool? nDownBlocked = null;
@@ -606,14 +607,15 @@ namespace MapEditor.mapgen
             Map.Tile tile = GetTile(x, y);
             if (tile == null) return false;
             // No need to check coords here, they are already checked in GetTileNoSnap
-            int cols = ThingDb.FloorTiles[usingTileMaterial].numCols;
-            int rows = ThingDb.FloorTiles[usingTileMaterial].numRows;
+            int cols = FloorTiles[(int)usingTileMaterial].numCols;
+            int rows = FloorTiles[(int)usingTileMaterial].numRows;
             ushort vari = (ushort)(((x + y) / 2 % cols) + (((y % rows) + 1 + cols - ((x + y) / 2) % cols) % rows) * cols);
-            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(usingTileMaterial, vari, (Map.Tile.EdgeTile.Direction)dir, usingEdgeMaterial));
+            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(usingTileMaterial, vari, 
+                (Map.Tile.EdgeTile.Direction)dir, usingEdgeMaterial));
             MapInterface.OpUpdatedTiles = true;
             return true;
         }
-        public bool AddEdge(Point pt, Map.Tile.EdgeTile.Direction dir, byte tileMaterial)
+        public bool AddEdge(Point pt, Map.Tile.EdgeTile.Direction dir, TileId tileMaterial)
         {
 
 
@@ -624,10 +626,11 @@ namespace MapEditor.mapgen
                 tileMaterial = usingTileMaterial;
 
             // No need to check coords here, they are already checked in GetTileNoSnap
-            int cols = ThingDb.FloorTiles[tileMaterial].numCols;
-            int rows = ThingDb.FloorTiles[tileMaterial].numRows;
-            ushort vari = (ushort)(((pt.X + pt.Y) / 2 % cols) + (((pt.Y % rows) + 1 + cols - ((pt.X + pt.Y) / 2) % cols) % rows) * cols);
-            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(tileMaterial, vari, (Map.Tile.EdgeTile.Direction)dir, usingEdgeMaterial));
+            int cols = FloorTiles[(int)tileMaterial].numCols;
+            int rows = FloorTiles[(int)tileMaterial].numRows;
+            ushort vari = (ushort)(((pt.X + pt.Y) / 2 % cols) + (((pt.Y % rows) + 1 + cols 
+                - ((pt.X + pt.Y) / 2) % cols) % rows) * cols);
+            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(tileMaterial, vari, dir, usingEdgeMaterial));
             return true;
         }
 
@@ -646,7 +649,8 @@ namespace MapEditor.mapgen
                 if (varcount >= 20)
                 {
                     if (input == 1) return v1[rnd.Next(0, 3)];
-                    if (input == 5) return (usingEdgeMaterial == 17) ? v5[rnd.Next(1, 3)] : v5[rnd.Next(0, 3)];
+                    if (input == 5) return (usingEdgeMaterial == EdgeId.DenseGrassEdge) 
+                            ? v5[rnd.Next(1, 3)] : v5[rnd.Next(0, 3)];
                     if (input == 6) return v6[rnd.Next(0, 3)];
                     if (input == 12) return v12[rnd.Next(0, 3)];
                 }
@@ -972,7 +976,7 @@ namespace MapEditor.mapgen
             // Map.Tile.EdgeTile.Direction EdgeDir;
             int selectedIndex = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.SelectedIndex;
             string tileName = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.Items[selectedIndex].ToString();
-            int indexIgnor = ThingDb.FloorTileNames.IndexOf(tileName);
+            TileId indexIgnor = (TileId)FloorTileNames.IndexOf(tileName);
             autoedgeIgnoreTile = indexIgnor;
 
             //usingTileMaterial
@@ -1007,7 +1011,7 @@ namespace MapEditor.mapgen
             {
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 1);
 
                 if (ga != null)
@@ -1024,8 +1028,12 @@ namespace MapEditor.mapgen
                     oo = ga.Graphic;
 
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                TileId ignoreAll 
+                    = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
+
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile 
+                    && ignoreAll == te1.graphicId)
                 {
                     if (IsTileFromDir(tilePt, dir2) &&
                         !DirSetting.NE &&
@@ -1092,7 +1100,7 @@ namespace MapEditor.mapgen
 
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 5);
 
                 if (ga != null)
@@ -1108,8 +1116,10 @@ namespace MapEditor.mapgen
                 if (ga != null)
                     oo = ga.Graphic;
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId) //
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked
+                    ? usingTileMaterial : te1.graphicId;
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile 
+                    && ignoreAll == te1.graphicId) //
                 {
                     if (IsTileFromDir(tilePt, dir2) &&
                         !DirSetting.NW &&
@@ -1121,7 +1131,9 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.NW = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)9 : Map.Tile.EdgeTile.Direction.NW_Sides;
+                            Edir = varcount < 20 
+                                ? (Map.Tile.EdgeTile.Direction)9 
+                                : Map.Tile.EdgeTile.Direction.NW_Sides;
                             done = true;
                         }
                     }
@@ -1135,7 +1147,9 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.NE = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)8 : Map.Tile.EdgeTile.Direction.NE_Sides;
+                            Edir = varcount < 20 
+                                ? (Map.Tile.EdgeTile.Direction)8
+                                : Map.Tile.EdgeTile.Direction.NE_Sides;
                             done = true;
                         }
                     }
@@ -1179,7 +1193,7 @@ namespace MapEditor.mapgen
 
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 12);
 
                 if (ga != null)
@@ -1196,9 +1210,12 @@ namespace MapEditor.mapgen
                     oo = ga.Graphic;
 
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
+                TileId ignoreAll 
+                    = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
 
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile 
+                    && ignoreAll == te1.graphicId)
                 {
 
                     if (IsTileFromDir(tilePt, dir2) &&
@@ -1211,7 +1228,9 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.SW = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)8 : Map.Tile.EdgeTile.Direction.SW_Sides;
+                            Edir = varcount < 20 
+                                ? (Map.Tile.EdgeTile.Direction)8 
+                                : Map.Tile.EdgeTile.Direction.SW_Sides;
                             done = true;
                         }
                     }
@@ -1225,7 +1244,9 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.NW = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)9 : Map.Tile.EdgeTile.Direction.NW_Sides;
+                            Edir = varcount < 20 
+                                ? (Map.Tile.EdgeTile.Direction)9 
+                                : Map.Tile.EdgeTile.Direction.NW_Sides;
                             done = true;
                         }
                     }
@@ -1269,7 +1290,7 @@ namespace MapEditor.mapgen
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
 
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
 
                 Map.Tile.EdgeTile ga = getEdge(te1, 6);
 
@@ -1286,8 +1307,11 @@ namespace MapEditor.mapgen
                     oo = ga.Graphic;
 
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
+
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile
+                    && ignoreAll == te1.graphicId)
                 {
                     if (IsTileFromDir(tilePt, dir2) &&
                         !DirSetting.SE &&
@@ -1322,7 +1346,7 @@ namespace MapEditor.mapgen
 
                         int num = random.Next(3);
 
-                        if (usingEdgeMaterial == 17)
+                        if (usingEdgeMaterial == EdgeId.DenseGrassEdge)
                             num = random.Next(2);
 
                         switch (num)
@@ -1357,16 +1381,19 @@ namespace MapEditor.mapgen
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
 
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 16);
                 if (ga != null)
                     oo = ga.Graphic;
 
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile
+                    && ignoreAll == te1.graphicId)
                 {
-                    if (!DirSetting.NE && !DirSetting.NW && !DirSetting.SE && !DirSetting.N && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
+                    if (!DirSetting.NE && !DirSetting.NW && !DirSetting.SE && !DirSetting.N 
+                        && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
                     {
 
                         Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)7 : dir1;
@@ -1388,14 +1415,17 @@ namespace MapEditor.mapgen
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 19);
                 if (ga != null)
                     oo = ga.Graphic;
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile 
+                    && ignoreAll == te1.graphicId)
                 {
-                    if (!DirSetting.NW && !DirSetting.NE && !DirSetting.SW && !DirSetting.N && !DirSetting.W && !isEdgeThere(tilePt, (int)dir1))
+                    if (!DirSetting.NW && !DirSetting.NE && !DirSetting.SW && !DirSetting.N 
+                        && !DirSetting.W && !isEdgeThere(tilePt, (int)dir1))
                     {
                         Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)2 : dir1;
                         AddEdge(tilePt, Edir, oo);
@@ -1414,14 +1444,17 @@ namespace MapEditor.mapgen
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 17);
                 if (ga != null)
                     oo = ga.Graphic;
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
+                    ? usingTileMaterial : te1.graphicId;
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile 
+                    && ignoreAll == te1.graphicId)
                 {
-                    if (!DirSetting.SE && !DirSetting.NE && !DirSetting.SW && !DirSetting.S && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
+                    if (!DirSetting.SE && !DirSetting.NE && !DirSetting.SW && !DirSetting.S 
+                        && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
                     {
                         Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)5 : dir1;
                         AddEdge(tilePt, Edir, oo);
@@ -1440,17 +1473,20 @@ namespace MapEditor.mapgen
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
-                byte oo = te1.graphicId;
+                TileId oo = te1.graphicId;
                 Map.Tile.EdgeTile ga = getEdge(te1, 18);
                 if (ga != null)
                     oo = ga.Graphic;
 
-                int ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked ? usingTileMaterial : te1.graphicId;
+                TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked
+                    ? usingTileMaterial : te1.graphicId;
 
-                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile && ignoreAll == te1.graphicId)
+                if (tesTile.Graphic != te1.Graphic && te1.graphicId != autoedgeIgnoreTile
+                    && ignoreAll == te1.graphicId)
                 {
 
-                    if (!DirSetting.SW && !DirSetting.NW && !DirSetting.SE && !DirSetting.W && !DirSetting.S && !isEdgeThere(tilePt, (int)dir1))
+                    if (!DirSetting.SW && !DirSetting.NW && !DirSetting.SE && !DirSetting.W 
+                        && !DirSetting.S && !isEdgeThere(tilePt, (int)dir1))
                     {
                         Edir = dir1;
                         AddEdge(tilePt, Edir, oo);

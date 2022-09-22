@@ -15,6 +15,8 @@ using MapEditor.XferGui;
 using MapEditor.newgui;
 using MapEditor.mapgen;
 using NoxShared;
+using static NoxShared.ThingDb;
+
 namespace MapEditor.MapInt
 {
     /// <summary>
@@ -1019,8 +1021,8 @@ namespace MapEditor.MapInt
         {
             var edge = mapView.EdgeMakeNewCtrl.GetEdge();
             // TODO: move stuff from MapHelper to this class
-            _instance._mapHelper.SetTileMaterial(ThingDb.FloorTileNames[edge.Graphic]);
-            _instance._mapHelper.SetEdgeMaterial(ThingDb.EdgeTileNames[edge.Edge]);
+            _instance._mapHelper.SetTileMaterial(ThingDb.FloorTileNames[(int)edge.Graphic]);
+            _instance._mapHelper.SetEdgeMaterial(ThingDb.EdgeTileNames[(int)edge.Edge]);
 
             if (mapView.TileMakeNewCtrl.BrushSize.Value >= 2)
             {
@@ -1081,8 +1083,8 @@ namespace MapEditor.MapInt
                 Map.Tile.EdgeTile edge = mapView.EdgeMakeNewCtrl.GetEdge();
                 if (MainWindow.Instance.mapView.EdgeMakeNewCtrl.chkAutoEdge.Checked)
                 {
-                    _instance._mapHelper.SetTileMaterial(ThingDb.FloorTileNames[edge.Graphic]);
-                    _instance._mapHelper.SetEdgeMaterial(ThingDb.EdgeTileNames[edge.Edge]);
+                    _instance._mapHelper.SetTileMaterial(FloorTileNames[(int)edge.Graphic]);
+                    _instance._mapHelper.SetEdgeMaterial(EdgeTileNames[(int)edge.Edge]);
                     _instance._mapHelper.AutoEdge(pt);
                 }
                 else
@@ -1114,7 +1116,7 @@ namespace MapEditor.MapInt
 
                 Map.Tile tile = TheMap.Tiles[pt];
                 if (tile.EdgeTiles.Count <= 0) return false;
-                byte edgeTypeID = mapView.EdgeMakeNewCtrl.GetEdge().Edge;
+                EdgeId edgeTypeID = mapView.EdgeMakeNewCtrl.GetEdge().Edge;
                 // filter edges with specific type (selected)
                 ArrayList newlist = new ArrayList();
                 if (!KeyHelper.ShiftKey)

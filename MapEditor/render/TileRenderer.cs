@@ -8,6 +8,8 @@ using System.Drawing;
 using System.Collections.Generic;
 using NoxShared;
 using System.Windows.Forms;
+using static NoxShared.ThingDb;
+
 namespace MapEditor.render
 {
 	/// <summary>
@@ -94,7 +96,7 @@ namespace MapEditor.render
         private Bitmap TileGenTexture(Map.Tile tile, bool transparent = false)
         {
         	if (tile == null) return null;
-        	int index = (int)ThingDb.FloorTiles[tile.graphicId].Variations[tile.Variation];
+        	int index = (int)FloorTiles[(int)tile.graphicId].Variations[tile.Variation];
             // duplicate tile image
             Bitmap image = (Bitmap) mapRenderer.VideoBag.GetBitmap(index).Clone();
             if (image == null) return null;
@@ -105,14 +107,14 @@ namespace MapEditor.render
 	            {
                    
 	            	var edge = (Map.Tile.EdgeTile) tile.EdgeTiles[i];
-					ThingDb.Tile edgeEdge = ThingDb.EdgeTiles[edge.Edge];
-					ThingDb.Tile edgeTile = ThingDb.FloorTiles[edge.Graphic];
+					Tile edgeEdge = EdgeTiles[(int)edge.Edge];
+					Tile edgeTile = FloorTiles[(int)edge.Graphic];
 					byte dirNum = (byte) edge.Dir;
 					// fix for MudEdge
                     
 					if (dirNum < edgeEdge.Variations.Count)
 					{
-			    		int indexedge = (int)edgeEdge.Variations[(byte) edge.Dir];
+			    		int indexedge = (int)edgeEdge.Variations[(byte)edge.Dir];
 			    		int indextile = (int)edgeTile.Variations[edge.Variation];
                         
 			    		mapRenderer.VideoBag.ApplyEdgeMask(image, indexedge, indextile);
@@ -150,7 +152,8 @@ namespace MapEditor.render
                 swCorner = new PointF(nwCorner.X + squareSize, nwCorner.Y + squareSize);
                 seCorner = new PointF(neCorner.X + squareSize, neCorner.Y + squareSize);
 
-                if ((EditorSettings.Default.Edit_PreviewMode && tdd.Tile.graphicId != 25) || (MainWindow.Instance.imgMode))
+                if ((EditorSettings.Default.Edit_PreviewMode && tdd.Tile.graphicId != TileId.Black)
+                    || (MainWindow.Instance.imgMode))
                 {
                 	// draw tile+edges texture
                     if (tdd.Texture != null)
@@ -195,13 +198,13 @@ namespace MapEditor.render
                 for (i = 0; i < tile.EdgeTiles.Count; i++)
                 {
                     edge = (Map.Tile.EdgeTile)tile.EdgeTiles[i];
-                    int graphId = edge.Graphic;
+                    TileId graphId = edge.Graphic;
                     Color col;
                     const int diam = 4;
                     PointF ellTL = new PointF(center.X - diam / 2f, center.Y - diam / 2f);
-                    col = Color.FromArgb(unchecked((int)((uint)Map.tilecolors[graphId])));
+                    col = Color.FromArgb(unchecked((int)Map.tilecolors[(int)graphId]));
                     
-                    if(graphId == tile.graphicId)
+                    if (graphId == tile.graphicId)
                         col = Color.Aqua;
 
                     // Skip this part if preview mode is enabled
