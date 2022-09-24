@@ -7,6 +7,7 @@ using System;
 using System.Drawing;
 using NoxShared;
 using MapEditor.MapInt;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor.newgui
 {
@@ -93,7 +94,7 @@ namespace MapEditor.newgui
                     {
                         statusMapItem += string.Format(FORMAT_EDGE_COUNT, tile.EdgeTiles.Count);
 
-                        foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
+                        foreach (EdgeTile edge in tile.EdgeTiles)
                         {
                             statusMapItem 
                                 += string.Format(

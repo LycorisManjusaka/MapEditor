@@ -1,0 +1,11 @@
+DirtHard	DirtDark2	BlendEdge
+DirtHard	DirtLight2	BlendEdge
+DirtLight2	DirtDark2	BlendEdge
+Water	DirtDark2	DirtRidge
+DirtBlue	DirtDark2	BlendEdge
+DirtDark	DirtDark2	BlendEdge
+DirtDark	DirtLight2	BlendEdge
+DirtDark2	WeedsSparse	BlendEdge
+DirtRed	DirtDark2	BlendEdge
+DirtRed	DirtLight2	BlendEdge
+RugTanLightLight	DirtDark2	RugTanEdge

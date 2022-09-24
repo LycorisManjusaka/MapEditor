@@ -1,0 +1,7 @@
+LOTDBlackMarble	LOTDPitted	MetalSteel
+LOTDBlackMarble	StoneLight	MetalSteel
+LOTDDark2	LOTDBlackMarble	MetalSteel
+LOTDDark2	StoneLight	MetalSteel
+LOTDDark2	LOTDPitted	MetalSteel
+StoneLight	LOTDPitted	MetalSteel
+LOTDPitted	ManaMineDirt	MetalSteel

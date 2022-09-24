@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using static MapEditor.BitmapExport.BitmapImporter;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
 
@@ -21,24 +22,52 @@ namespace MapEditor.BitmapExport
             this.copiedArea = copiedArea;
         }
 
+        public Dictionary<TileId, Dictionary<TileId, EdgeId>> GetRules()
+        {
+            MakeResultLines();
+            var stats = new Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>>();
+            CollectStatsFromLines(resultLines.ToArray(), ref stats);
+            var singleStats = MakeSingleStats(stats);
+            return MakeRules(singleStats);
+        }
+
         public void EdgeRuleStatisticsToFile(string filePath)
         {
             MakeResultLines();
             File.WriteAllLines(filePath, resultLines.ToArray());
         }
 
-        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> StatsToRules(string filePath)
+        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> StatFilesToRules(
+            string[] filePaths)
         {
-            var stats = CollectStats(filePath);
+            var stats = new Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>>();
+            foreach (var filePath in filePaths)
+            {
+                CollectStatsFromFile(filePath, ref stats);
+            }
+
             var singleStats = MakeSingleStats(stats);
             return MakeRules(singleStats);
+        }
+        
+        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> 
+            StatFileToRules(string filePath)
+        {
+            return StatFilesToRules(new string[] { filePath });
         }
 
         public static void RulesToFile(
             Dictionary<TileId, Dictionary<TileId, EdgeId>> rules, string filePath)
         {
+            List<string> res = RulesToLines(rules);
+            File.WriteAllLines(filePath, res.ToArray());
+        }
+
+        public static List<string> RulesToLines(
+            Dictionary<TileId, Dictionary<TileId, EdgeId>> rules)
+        {
             List<string> res = new List<string>();
-            foreach(var tileItem in rules)
+            foreach (var tileItem in rules)
             {
                 var tileId = tileItem.Key;
                 var neighItems = tileItem.Value;
@@ -50,7 +79,8 @@ namespace MapEditor.BitmapExport
                         "{0}\t{1}\t{2}", tileId.ToString(), neighId.ToString(), edgeId.ToString()));
                 }
             }
-            File.WriteAllLines(filePath, res.ToArray());
+
+            return res;
         }
 
         private static Dictionary<TileId, Dictionary<TileId, EdgeId>>
@@ -94,14 +124,13 @@ namespace MapEditor.BitmapExport
             return res;
         }
 
-
-        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> LoadRules(string filePath)
+        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> RulesFromLines(string[] lines)
         {
             var rules = new Dictionary<TileId, Dictionary<TileId, EdgeId>>();
-            var lines = File.ReadAllLines(filePath);
+            
             foreach (var line in lines)
             {
-                var words = line.Split(new char[] { '\t' });
+                var words = line.Split(new char[] { '\t', ' ' });
                 var neighTileId = (TileId)Enum.Parse(typeof(TileId), words[0]);
                 var tileId = (TileId)Enum.Parse(typeof(TileId), words[1]);
                 var edgeId = (EdgeId)Enum.Parse(typeof(EdgeId), words[2]);
@@ -113,6 +142,12 @@ namespace MapEditor.BitmapExport
                     rules[neighTileId][tileId] = edgeId;
             }
             return rules;
+        }
+
+        public static Dictionary<TileId, Dictionary<TileId, EdgeId>> RulesFromFile(string filePath)
+        {
+            var lines = File.ReadAllLines(filePath);
+            return RulesFromLines(lines);
         }
 
 
@@ -168,12 +203,19 @@ namespace MapEditor.BitmapExport
             }
         }
 
-        private static Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>>
-            CollectStats(string filePath)
+        private static void CollectStatsFromFile(
+            string filePath, 
+            ref Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>> stats)
         {
-            var stats = new Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>>();
-
             var lines = File.ReadAllLines(filePath);
+            CollectStatsFromLines(lines, ref stats);
+
+        }
+
+        private static void CollectStatsFromLines(
+            string[] lines,
+            ref Dictionary<TileId, Dictionary<TileId, Dictionary<EdgeId, int>>> stats)
+        {
             foreach (var line in lines)
             {
                 var words = line.Split(new char[] { '\t' });
@@ -191,8 +233,6 @@ namespace MapEditor.BitmapExport
                     stats[neighTileId][tileId][edgeId] = 0;
                 stats[neighTileId][tileId][edgeId]++;
             }
-
-            return stats;
         }
 
         private void MakeResultLines()
@@ -218,15 +258,15 @@ namespace MapEditor.BitmapExport
             var tile = timeTile.Tile;
             var tileId = tile.graphicId;
 
-            foreach (var dir in new EdgeTile.Direction[] {
-                EdgeTile.Direction.South,
-                EdgeTile.Direction.North,
-                EdgeTile.Direction.East,
-                EdgeTile.Direction.West,
-                EdgeTile.Direction.SE_Tip,
-                EdgeTile.Direction.NW_Tip,
-                EdgeTile.Direction.NE_Tip,
-                EdgeTile.Direction.SW_Tip
+            foreach (var dir in new BaseDir[] {
+                BaseDir.South,
+                BaseDir.North,
+                BaseDir.East,
+                BaseDir.West,
+                BaseDir.SE,
+                BaseDir.NW,
+                BaseDir.NE,
+                BaseDir.SW
             })
             {
                 var neighTimeTile = GetTile(i, j, dir);
@@ -244,10 +284,10 @@ namespace MapEditor.BitmapExport
                         if (item is EdgeTile edgeTile)
                         {
                             var currentEdgeId = edgeTile.Edge;
-                            if (((EdgeIncludesTile(currentEdgeId) 
-                                && edgeTile.Graphic == neighTileId) 
-                                || !EdgeIncludesTile(currentEdgeId)) 
-                                && GetOppositeDir(edgeTile.Dir) == dir)
+                            if (((EdgeIncludesTile(currentEdgeId)
+                                && edgeTile.Graphic == neighTileId)
+                                || !EdgeIncludesTile(currentEdgeId))
+                                && GetOppositeDir(ToBaseDir(edgeTile.Dir, currentEdgeId)) == dir)
                             {
                                 edgeId = currentEdgeId;
                                 break;
@@ -268,10 +308,10 @@ namespace MapEditor.BitmapExport
                             if (item is EdgeTile neighEdgeTile)
                             {
                                 var currentNeighEdgeId = neighEdgeTile.Edge;
-                                if (((EdgeIncludesTile(currentNeighEdgeId) 
-                                    && (neighEdgeTile.Graphic == tileId)) 
+                                if (((EdgeIncludesTile(currentNeighEdgeId)
+                                    && (neighEdgeTile.Graphic == tileId))
                                     || !EdgeIncludesTile(currentNeighEdgeId))
-                                    && GetUseDir(neighEdgeTile.Dir) == dir)
+                                    && ToBaseDir(neighEdgeTile.Dir, currentNeighEdgeId) == dir)
                                 {
                                     edgeId = currentNeighEdgeId;
                                     break;
@@ -282,54 +322,14 @@ namespace MapEditor.BitmapExport
                         if (edgeId != EdgeId.None)
                         {
                             resultLines.Add(string.Format(
-                                "{0}\t{1}\t{2}", tileId.ToString(), 
+                                "{0}\t{1}\t{2}", tileId.ToString(),
                                 neighTileId.ToString(),
                                 edgeId.ToString()));
 
                         }
-                        else
-                        {
-                            //resultLines.Add(string.Format(
-                            //    "{0}\t{1}\t{2}\t{3} [{4},{5}]->\t[{6},{7}]fail", 
-                            //    neighTileId.ToString(), 
-                            //    tileId.ToString(),
-                            //    edgeId.ToString(), dir, neighTile.Location.X, neighTile.Location.Y,
-                            //    tile.Location.X, tile.Location.Y));
-                        }
                     }
+                }
             }
-     
-
-
-           //foreach (var item in timeTile.Tile.EdgeTiles)
-           //{
-           //    if (item is EdgeTile edgeTile)
-           //    {
-           //        var edge = edgeTile.Edge;
-           //        var dir = edgeTile.Dir;
-           //        EdgeTile.Direction useDir = GetUseDir(dir);
-           //
-           //        if (useDir == (EdgeTile.Direction)255)
-           //            continue;
-           //
-           //        var neighTimeTile = GetTile(i, j, useDir);
-           //        if (neighTimeTile == null)
-           //            continue;
-           //
-           //
-           //        var neighTile = neighTimeTile.Tile;
-           //        var neighTileId = neighTile.graphicId;
-           //
-           //        if (tileId == neighTileId)
-           //        {
-           //            continue;
-           //        }
-           //
-           //        resultLines.Add(string.Format(
-           //            "{0}\t{1}\t{2}", neighTileId.ToString(), tileId.ToString(),
-           //            edge.ToString()));
-           //    }
-           }
         }
 
         private static bool EdgeIncludesTile(EdgeId edgeId)
@@ -349,85 +349,28 @@ namespace MapEditor.BitmapExport
                 || edgeId == EdgeId.SwampEdge;
         }
 
-        private static EdgeTile.Direction GetOppositeDir(EdgeTile.Direction dir)
+        private static BaseDir GetOppositeDir(BaseDir dir)
         {
             switch (dir)
             {
-                case EdgeTile.Direction.West:
-                case EdgeTile.Direction.West_02:
-                case EdgeTile.Direction.West_03:
-                    return EdgeTile.Direction.East;
-                case EdgeTile.Direction.South:
-                case EdgeTile.Direction.South_07:
-                case EdgeTile.Direction.South_09:
-                    return EdgeTile.Direction.North;
-                case EdgeTile.Direction.North:
-                case EdgeTile.Direction.North_08:
-                case EdgeTile.Direction.North_0A:
-                    return EdgeTile.Direction.South;
-                case EdgeTile.Direction.East:
-                case EdgeTile.Direction.East_D:
-                case EdgeTile.Direction.East_E:
-                    return EdgeTile.Direction.West;
-                case EdgeTile.Direction.SW_Tip:
-                    return EdgeTile.Direction.NE_Tip;
-                case EdgeTile.Direction.SW_Sides:
-                    return EdgeTile.Direction.NE_Tip;
-                case EdgeTile.Direction.NE_Tip:
-                    return EdgeTile.Direction.SW_Tip;
-                case EdgeTile.Direction.NE_Sides:
-                    return EdgeTile.Direction.SW_Tip;
-                case EdgeTile.Direction.NW_Tip:
-                    return EdgeTile.Direction.SE_Tip;
-                case EdgeTile.Direction.NW_Sides:
-                    return EdgeTile.Direction.SE_Tip;
-                case EdgeTile.Direction.SE_Tip:
-                    return EdgeTile.Direction.NW_Tip;
-                case EdgeTile.Direction.SE_Sides:
-                    return EdgeTile.Direction.NW_Tip;
+                case BaseDir.West:
+                    return BaseDir.East;
+                case BaseDir.South:
+                    return BaseDir.North;
+                case BaseDir.North:
+                    return BaseDir.South;
+                case BaseDir.East:
+                    return BaseDir.West;
+                case BaseDir.SW:
+                    return BaseDir.NE;
+                case BaseDir.NE:
+                    return BaseDir.SW;
+                case BaseDir.NW:
+                    return BaseDir.SE;
+                case BaseDir.SE:
+                    return BaseDir.NW;
                 default:
-                    return EdgeTile.Direction.East;
-            }
-        }
-
-        private static EdgeTile.Direction GetUseDir(EdgeTile.Direction dir)
-        {
-            switch (dir)
-            {
-                case EdgeTile.Direction.West:
-                case EdgeTile.Direction.West_02:
-                case EdgeTile.Direction.West_03:
-                    return EdgeTile.Direction.West;
-                case EdgeTile.Direction.South:
-                case EdgeTile.Direction.South_07:
-                case EdgeTile.Direction.South_09:
-                    return EdgeTile.Direction.South;
-                case EdgeTile.Direction.North:
-                case EdgeTile.Direction.North_08:
-                case EdgeTile.Direction.North_0A:
-                    return EdgeTile.Direction.North;
-                case EdgeTile.Direction.East:
-                case EdgeTile.Direction.East_D:
-                case EdgeTile.Direction.East_E:
-                    return EdgeTile.Direction.East;
-                case EdgeTile.Direction.SW_Tip:
-                    return EdgeTile.Direction.SW_Tip;
-                case EdgeTile.Direction.SW_Sides:
-                    return EdgeTile.Direction.SW_Tip;
-                case EdgeTile.Direction.NE_Tip:
-                    return EdgeTile.Direction.NE_Tip;
-                case EdgeTile.Direction.NE_Sides:
-                    return EdgeTile.Direction.NE_Tip;
-                case EdgeTile.Direction.NW_Tip:
-                    return EdgeTile.Direction.NW_Tip;
-                case EdgeTile.Direction.NW_Sides:
-                    return EdgeTile.Direction.NW_Tip;
-                case EdgeTile.Direction.SE_Tip:
-                    return EdgeTile.Direction.SE_Tip;
-                case EdgeTile.Direction.SE_Sides:
-                    return EdgeTile.Direction.SE_Tip;
-                default:
-                    return EdgeTile.Direction.East;
+                    return BaseDir.None;
             }
         }
 
@@ -466,13 +409,13 @@ namespace MapEditor.BitmapExport
         }
 
         MapView.TimeTile GetTile(
-            int baseI, int baseJ, EdgeTile.Direction dir = (EdgeTile.Direction)255)
+            int baseI, int baseJ, BaseDir dir = BaseDir.None)
         {
             int i = baseI;
             int j = baseJ;
-            if (dir != (EdgeTile.Direction)255)
+            if (dir != BaseDir.None)
             {
-                var ij = BitmapImporter.OffsetMap[dir];
+                var ij = OffsetMap[dir];
                 i += ij[0];
                 j += ij[1];
             }

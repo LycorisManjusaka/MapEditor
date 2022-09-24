@@ -16,6 +16,7 @@ using MapEditor.newgui;
 using MapEditor.mapgen;
 using NoxShared;
 using static NoxShared.ThingDb;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor.MapInt
 {
@@ -1080,7 +1081,7 @@ namespace MapEditor.MapInt
         {
             if (TheMap.Tiles.ContainsKey(pt))
             {
-                Map.Tile.EdgeTile edge = mapView.EdgeMakeNewCtrl.GetEdge();
+                EdgeTile edge = mapView.EdgeMakeNewCtrl.GetEdge();
                 if (MainWindow.Instance.mapView.EdgeMakeNewCtrl.chkAutoEdge.Checked)
                 {
                     _instance._mapHelper.SetTileMaterial(FloorTileNames[(int)edge.Graphic]);
@@ -1091,7 +1092,7 @@ namespace MapEditor.MapInt
                 {
                     Map.Tile tile = TheMap.Tiles[pt];
 
-                    foreach (Map.Tile.EdgeTile ex in tile.EdgeTiles)
+                    foreach (EdgeTile ex in tile.EdgeTiles)
                     {
                         // don't create edges with equal EdgeType, Direction and CoverTile
                         if (ex.Edge == edge.Edge && ex.Dir == edge.Dir && ex.Graphic == edge.Graphic) return false;
@@ -1123,7 +1124,7 @@ namespace MapEditor.MapInt
                 {
 
                     int i = tile.EdgeTiles.Count - 1;
-                    foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
+                    foreach (EdgeTile edge in tile.EdgeTiles)
                     {
                         if (i > 0) newlist.Add(edge);
                         i--;
@@ -1132,7 +1133,7 @@ namespace MapEditor.MapInt
                 }
                 else
                 {
-                    foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
+                    foreach (EdgeTile edge in tile.EdgeTiles)
                     {
                         if (edge.Edge != edgeTypeID) newlist.Add(edge);
                     }

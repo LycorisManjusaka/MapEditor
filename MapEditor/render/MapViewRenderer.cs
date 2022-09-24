@@ -158,9 +158,13 @@ namespace MapEditor.render
                 BitmapShader shader = null;
                 // тонируем если стена необычная
 
-                if ((EditorSettings.Default.Draw_ColorWalls || (MapInterface.CurrentMode == EditMode.WALL_CHANGE)) && (!MainWindow.Instance.imgMode))
+                if (bitmap != null && 
+                    (EditorSettings.Default.Draw_ColorWalls || 
+                    (MapInterface.CurrentMode == EditMode.WALL_CHANGE)) && 
+                    (!MainWindow.Instance.imgMode))
                 {
-                    if (wall.Destructable || wall.Secret || wall.Window || transparent || beingSelected || mapView.picking)
+                    if (wall.Destructable || wall.Secret || wall.Window || transparent 
+                        || beingSelected || mapView.picking)
                     {
                         shader = new BitmapShader(bitmap);
                         shader.LockBitmap();

@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using NoxShared;
 using System.Windows.Forms;
 using static NoxShared.ThingDb;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor.render
 {
@@ -106,7 +107,7 @@ namespace MapEditor.render
 	            for (int i = 0; i < tile.EdgeTiles.Count; i++)
 	            {
                    
-	            	var edge = (Map.Tile.EdgeTile) tile.EdgeTiles[i];
+	            	var edge = (EdgeTile) tile.EdgeTiles[i];
 					Tile edgeEdge = EdgeTiles[(int)edge.Edge];
 					Tile edgeTile = FloorTiles[(int)edge.Graphic];
 					byte dirNum = (byte) edge.Dir;
@@ -193,11 +194,11 @@ namespace MapEditor.render
                 PointF neCornerB = neCorner;
                 PointF seCornerB = seCorner;
                 // Draw edges
-                int i = 0; Map.Tile.EdgeTile edge;
+                int i = 0; EdgeTile edge;
                 
                 for (i = 0; i < tile.EdgeTiles.Count; i++)
                 {
-                    edge = (Map.Tile.EdgeTile)tile.EdgeTiles[i];
+                    edge = (EdgeTile)tile.EdgeTiles[i];
                     TileId graphId = edge.Graphic;
                     Color col;
                     const int diam = 4;
@@ -214,43 +215,43 @@ namespace MapEditor.render
                     // Draw Edges (Normal)
                     switch (edge.Dir)
                     {
-                        case Map.Tile.EdgeTile.Direction.North_08:
-                        case Map.Tile.EdgeTile.Direction.North_0A:
-                        case Map.Tile.EdgeTile.Direction.North:
+                        case EdgeTile.Direction.North_08:
+                        case EdgeTile.Direction.North_0A:
+                        case EdgeTile.Direction.North:
                             nwCorner2.X += 2;
                             nwCorner2.Y += 2;
                             neCorner2.X += 2;
                             neCorner2.Y += 2;
                             g.DrawLine(new Pen(col, 4), nwCorner2, neCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.South_07:
-                        case Map.Tile.EdgeTile.Direction.South_09:
-                        case Map.Tile.EdgeTile.Direction.South:
+                        case EdgeTile.Direction.South_07:
+                        case EdgeTile.Direction.South_09:
+                        case EdgeTile.Direction.South:
                             swCorner2.X -= 2;
                             swCorner2.Y -= 2;
                             seCorner2.X -= 2;
                             seCorner2.Y -= 2;
                             g.DrawLine(new Pen(col, 4), swCorner2, seCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.East_D:
-                        case Map.Tile.EdgeTile.Direction.East_E:
-                        case Map.Tile.EdgeTile.Direction.East:
+                        case EdgeTile.Direction.East_D:
+                        case EdgeTile.Direction.East_E:
+                        case EdgeTile.Direction.East:
                             neCorner.X -= 2;
                             neCorner.Y += 2;
                             seCorner.X -= 2;
                             seCorner.Y += 2;
                             g.DrawLine(new Pen(col, 4), neCorner, seCorner);
                             break;
-                        case Map.Tile.EdgeTile.Direction.West_02:
-                        case Map.Tile.EdgeTile.Direction.West_03:
-                        case Map.Tile.EdgeTile.Direction.West:
+                        case EdgeTile.Direction.West_02:
+                        case EdgeTile.Direction.West_03:
+                        case EdgeTile.Direction.West:
                             nwCorner2.X += 2;
                             nwCorner2.Y -= 2;
                             swCorner2.X += 2;
                             swCorner2.Y -= 2;
                             g.DrawLine(new Pen(col, 4), nwCorner2, swCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.NE_Sides:
+                        case EdgeTile.Direction.NE_Sides:
                             neCorner.X -= 2;
                             neCorner.Y += 2;
                             seCorner.X -= 2;
@@ -266,7 +267,7 @@ namespace MapEditor.render
                             neCorner2.Y += 2;
                             g.DrawLine(new Pen(col, 4), nwCorner2, neCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.NW_Sides:
+                        case EdgeTile.Direction.NW_Sides:
                             nwCorner2.X += 2;
                             nwCorner2.Y -= 2;
                             swCorner2.X += 2;
@@ -282,7 +283,7 @@ namespace MapEditor.render
                             neCorner2.Y += 2;
                             g.DrawLine(new Pen(col, 4), nwCorner2, neCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.SE_Sides:
+                        case EdgeTile.Direction.SE_Sides:
                             swCorner2.X -= 2;
                             swCorner2.Y -= 2;
                             seCorner2.X -= 2;
@@ -299,7 +300,7 @@ namespace MapEditor.render
                             g.DrawLine(new Pen(col, 4), neCorner, seCorner);
                             break;
 
-                        case Map.Tile.EdgeTile.Direction.SW_Sides:
+                        case EdgeTile.Direction.SW_Sides:
                             swCorner2.X -= 2;
                             swCorner2.Y -= 2;
                             seCorner2.X -= 2;
@@ -315,7 +316,7 @@ namespace MapEditor.render
                             swCorner2.Y -= 2;
                             g.DrawLine(new Pen(col, 4), nwCorner2, swCorner2);
                             break;
-                        case Map.Tile.EdgeTile.Direction.NE_Tip:
+                        case EdgeTile.Direction.NE_Tip:
                             using (m)
                             {
                                 PointF centerTR = new PointF(ellTL.X + 2, ellTL.Y - (squareSize - 4));
@@ -328,7 +329,7 @@ namespace MapEditor.render
                             }
                             
                             break;
-                        case Map.Tile.EdgeTile.Direction.SE_Tip:
+                        case EdgeTile.Direction.SE_Tip:
                             using (m)
                             {
                                 PointF centerTR = new PointF(ellTL.X + (squareSize-(float)1.5), ellTL.Y+(float)0.5);
@@ -342,7 +343,7 @@ namespace MapEditor.render
                             
                             break;
 
-                        case Map.Tile.EdgeTile.Direction.SW_Tip:
+                        case EdgeTile.Direction.SW_Tip:
                             using (m)
                             {
                                 PointF centerTR = new PointF(ellTL.X + 2, ellTL.Y + (squareSize - 2));
@@ -354,7 +355,7 @@ namespace MapEditor.render
                                 g.ResetTransform();
                             }
                             break;
-                        case Map.Tile.EdgeTile.Direction.NW_Tip:
+                        case EdgeTile.Direction.NW_Tip:
                             using (m)
                             {
                                 PointF centerTR = new PointF(ellTL.X - (squareSize-5), ellTL.Y+(float)0.5);

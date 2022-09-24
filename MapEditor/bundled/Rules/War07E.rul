@@ -1,0 +1,11 @@
+GalavaBrownMarble	GalavaBrick3	MetalBrass
+GalavaBrownMarble	StoneLight	MetalBrass
+GalavaBrick	GalavaBrick3	BrickEdgeBrown
+GalavaBrick	GalavaBrownMarble	BrickEdgeBrown
+StoneLight	GalavaBrick	BrickEdgeBrown
+StoneLight	GalavaBrick3	BrickEdgeBrown
+RugBlueNorm	GalavaBrownMarble	MetalBrass
+RugBlueNorm	GalavaBrick3	MetalBrass
+RugTanLightDark	GalavaBrick3	RugTanEdge
+RedBrick	GalavaBrick3	BrickEdgeBrown
+CobblestoneGrayDark	GalavaBrick3	CobbleStoneTrim

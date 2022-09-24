@@ -1,0 +1,10 @@
+Lava	VolcanicCraggy	LavaEdgeBlackDirt
+VolcanicCraggy	GreenBrick	BlendEdge
+VolcanicCraggy	DirtDark	BlendEdge
+WoodGray	GreenBrick	BrickEdgeBrown
+GreenBrick	DirtDark	BlendEdge
+GreenBrick	CaveHardDark	BlendEdge
+Water	GreenBrick	DirtRidge
+Water	DirtDark	BlendEdge
+DirtDark2	CaveHardDark	BlendEdge
+DirtDark	CaveHardDark	BlendEdge

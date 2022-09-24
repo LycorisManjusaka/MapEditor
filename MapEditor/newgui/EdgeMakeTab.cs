@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using MapEditor.videobag;
 using NoxShared;
 using static NoxShared.ThingDb;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor.newgui
 {
@@ -24,6 +25,7 @@ namespace MapEditor.newgui
         private VideoBagCachedProvider videoBag = null;
         int edgeDirection = 0;
         int edgeTypeID = 0;
+        private static Random random = new Random((int)DateTime.Now.TimeOfDay.Ticks);
 
         public EdgeMakeTab()
         {
@@ -61,60 +63,63 @@ namespace MapEditor.newgui
         /// <summary>
         /// Возвращает новый экземпляр EdgeTile в соответствии с настройками пользователя
         /// </summary>
-        public Map.Tile.EdgeTile GetEdge()
+        public EdgeTile GetEdge()
         {
             // как покрытие юзаем тот тайл что выбран во вкладке Tiles
             var tile = mapView.GetNearestTile(mapView.mouseLocation);
             Map.Tile coverTile = mapView.TileMakeNewCtrl.GetTile(tile);
 
-            var edgeDir = (Map.Tile.EdgeTile.Direction)edgeDirection;
+            var edgeDir = (EdgeTile.Direction)edgeDirection;
             if ((chkAutoVariation.Checked) && (!chkAutoEdge.Checked))
                 edgeDir = GetRandomVariation(edgeDir);
 
-            return new Map.Tile.EdgeTile(coverTile.graphicId, coverTile.Variation, edgeDir, (EdgeId)edgeTypeID);
+            return new EdgeTile(coverTile.graphicId, coverTile.Variation, edgeDir, (EdgeId)edgeTypeID);
         }
-        public static Map.Tile.EdgeTile.Direction GetRandomVariation(Map.Tile.EdgeTile.Direction dir)
+        public static EdgeTile.Direction GetRandomVariation(EdgeTile.Direction dir)
         {
             // Variation is actually Direction, 3 variations for N, S, E, W
-            var r = new Random();
 
             switch (dir)
             {
-                case Map.Tile.EdgeTile.Direction.East:
-                case Map.Tile.EdgeTile.Direction.East_D:
-                case Map.Tile.EdgeTile.Direction.East_E:
-                    return (Map.Tile.EdgeTile.Direction)r.Next(12, 15);
-                case Map.Tile.EdgeTile.Direction.West:
-                case Map.Tile.EdgeTile.Direction.West_02:
-                case Map.Tile.EdgeTile.Direction.West_03:
-                    return (Map.Tile.EdgeTile.Direction)r.Next(1, 4);
-                case Map.Tile.EdgeTile.Direction.North:
-                case Map.Tile.EdgeTile.Direction.North_08:
-                case Map.Tile.EdgeTile.Direction.North_0A:
-                    return OddRandom(true, r);
-                case Map.Tile.EdgeTile.Direction.South:
-                case Map.Tile.EdgeTile.Direction.South_07:
-                case Map.Tile.EdgeTile.Direction.South_09:
-                    return OddRandom(false, r);
+                case EdgeTile.Direction.East:
+                case EdgeTile.Direction.East_D:
+                case EdgeTile.Direction.East_E:
+                    return (EdgeTile.Direction)random.Next(
+                        (int)EdgeTile.Direction.East, 
+                        (int)EdgeTile.Direction.East_E);
+                case EdgeTile.Direction.West:
+                case EdgeTile.Direction.West_02:
+                case EdgeTile.Direction.West_03:
+                    return (EdgeTile.Direction)random.Next(
+                        (int)EdgeTile.Direction.West, 
+                        (int)EdgeTile.Direction.West_03);
+                case EdgeTile.Direction.North:
+                case EdgeTile.Direction.North_08:
+                case EdgeTile.Direction.North_0A:
+                    return OddRandom(true);
+                case EdgeTile.Direction.South:
+                case EdgeTile.Direction.South_07:
+                case EdgeTile.Direction.South_09:
+                    return OddRandom(false);
                 default:
                     return dir;
             }
         }
-        private static Map.Tile.EdgeTile.Direction OddRandom(bool north, Random r)
+        private static EdgeTile.Direction OddRandom(bool north)
         {
             if (north)
             {
-                int i = r.Next(1, 4);
-                if (i == 1) return Map.Tile.EdgeTile.Direction.North;
-                if (i == 2) return Map.Tile.EdgeTile.Direction.North_08;
-                return Map.Tile.EdgeTile.Direction.North_0A;
+                int i = random.Next(1, 4);
+                if (i == 1) return EdgeTile.Direction.North;
+                if (i == 2) return EdgeTile.Direction.North_08;
+                return EdgeTile.Direction.North_0A;
             }
             else
             {
-                int i = r.Next(1, 4);
-                if (i == 1) return Map.Tile.EdgeTile.Direction.South;
-                if (i == 2) return Map.Tile.EdgeTile.Direction.South_07;
-                return Map.Tile.EdgeTile.Direction.South_09;
+                int i = random.Next(1, 4);
+                if (i == 1) return EdgeTile.Direction.South;
+                if (i == 2) return EdgeTile.Direction.South_07;
+                return EdgeTile.Direction.South_09;
             }
         }
 

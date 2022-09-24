@@ -1,0 +1,6 @@
+CobblestoneGrayLight	GrassNorm	BlendEdge
+CobblestoneGrayLight	GalavaGateFacade	BlendEdge
+GrassNorm	GalavaGateFacade	BlendEdge
+GrassDense	GrassNorm	BlendEdge
+GrassDense	GalavaGateFacade	BlendEdge
+GrassSparse2	GalavaGateFacade	BlendEdge

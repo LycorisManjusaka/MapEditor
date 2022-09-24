@@ -1,0 +1,17 @@
+IxBrickFancy	DirtLight2	BlendEdge
+DirtLight2	IxBrickRev	BlendEdge
+DirtLight2	IxBrick	BlendEdge
+DirtLight2	DirtDark2	BlendEdge
+DirtLight2	DirtHard	BlendEdge
+IxBrick	DirtDark2	BrickEdgeBrown
+DirtDark2	DirtBlue	BlendEdge
+DirtDark2	WoodDark2	BlendEdge
+DirtDark2	GreenBrick	BlendEdge
+WaterShallow	DirtDark2	BlendEdge
+WaterShallow	DirtBlue	GrassEdge
+WaterShallow	GreenBrick	GrassEdge
+WaterDeep	WaterShallow	BlendEdge
+WaterDeep	DirtBlue	BlendEdge
+IxBrickRev	DirtDark2	BrickEdgeBrown
+IxBrickRev	DirtBlue	BrickEdgeBrown
+GreenBrick	DirtBlue	BlendEdge

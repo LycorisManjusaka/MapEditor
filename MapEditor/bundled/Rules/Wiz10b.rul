@@ -1,0 +1,8 @@
+LOTDBlackMarble	LOTDPitted	BrickEdgeBrown
+LOTDBlackMarble	StoneLight	MetalSteel
+LOTDBlackMarble	DirtLight2	BlendEdge
+ManaMineDirt	LOTDPitted	MetalSteel
+ManaMineDirt	LOTDBlackMarble	BlendEdge
+DirtDark2	LOTDBlackMarble	BlendEdge
+DirtDark2	LOTDDark	BlendEdge
+LOTDDark	LOTDBlackMarble	BrickEdgeBrown

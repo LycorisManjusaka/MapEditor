@@ -1,0 +1,14 @@
+IceFloorDeepBlue	IceFloorDark	BlendEdge
+IceFloorRough	IceFloorDeepBlue	BlendEdge
+IceFloorRough	IceFloorDark	BlendEdge
+LOTDDark	IceFloorDark	IceRidge
+IceFloorLight	IceFloorDeepBlue	BlendEdge
+CaveHardTan	IceFloorDeepBlue	IceRidge
+CaveHardTan	CaveHardBrown	BlendEdge
+CaveHardBrown	IceFloorDeepBlue	IceRidge
+CaveHardBrown	IceFloorRough	IceRidge
+CaveHardDark	ManaMineDirt	BlendEdge
+CaveHardDark	CaveHardBrown	BlendEdge
+WoodGray	CaveHardBrown	BrickEdgeBrown
+WoodGray2	CaveHardBrown	BrickEdgeBrown
+GreenBrick	CaveHardBrown	BrickEdgeBrown

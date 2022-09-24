@@ -1,0 +1,17 @@
+GalavaBrownMarble	GalavaBrick3	MetalBrass
+GalavaBrownMarble	RugGreen	MetalBrass
+GalavaBrownMarble	GalavaBrick2	BrickEdgeBrown
+GalavaBrownMarble	GalavaBrick	BrickEdgeBrown
+GalavaBrownMarble	RugBlueNorm	MetalBrass
+RugGreen	GalavaBrick3	RugTanLightEdge
+RugGreen	GalavaBrick	RugTanLightEdge
+StoneLight	GalavaBrick3	MetalBrass
+StoneLight	RugBlueNorm	BrickEdgeBrown
+GalavaBrick2	StoneLight	BrickEdgeBrown
+GalavaBrick2	GalavaBrick3	BrickEdgeBrown
+RedBrick	GalavaBrick3	BrickEdgeBrown
+GalavaBrick	StoneLight	BrickEdgeBrown
+GalavaBrick	GalavaBrick3	BrickEdgeBrown
+RugBlueNorm	GalavaBrick3	RugTanLightEdge
+RugRed	GalavaBrick3	RugTanLightEdge
+RugRed	RugBlueNorm	RugTanLightEdge

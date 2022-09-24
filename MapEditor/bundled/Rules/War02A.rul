@@ -1,0 +1,14 @@
+DirtDark2	GreenBrick	BlendEdge
+CaveHardDark	CaveHardBrown	DirtRidge
+CaveHardDark	GreenBrick	BlendEdge
+GreenBrick	CaveHardBrown	BlendEdge
+GreenBrick	DunMirBrick1	BrickEdgeBrown
+TileRed	GreenBrick	MetalBrass
+Lava	CaveHardBrown	LavaEdgeBrownDirt
+TileDark	GreenBrick	MetalBrass
+RedBrick6	CaveHardBrown	BrickEdgeBrown
+CaveHardTan	CaveHardDark	DirtRidge
+RugTanLightLight	DunMirBrick1	RugTanEdge
+RugTanLightLight	RugTanLightDark	RugTanEdge
+RugTanLightDark	DunMirBrick1	RugTanLightEdge
+DunMirBrick1	CaveHardBrown	BrickEdgeBrown

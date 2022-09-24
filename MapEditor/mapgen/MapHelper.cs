@@ -16,6 +16,7 @@ using System.Reflection;
 using MapEditor.MapInt;
 using System.IO;
 using static NoxShared.ThingDb;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor.mapgen
 {
@@ -610,12 +611,12 @@ namespace MapEditor.mapgen
             int cols = FloorTiles[(int)usingTileMaterial].numCols;
             int rows = FloorTiles[(int)usingTileMaterial].numRows;
             ushort vari = (ushort)(((x + y) / 2 % cols) + (((y % rows) + 1 + cols - ((x + y) / 2) % cols) % rows) * cols);
-            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(usingTileMaterial, vari, 
-                (Map.Tile.EdgeTile.Direction)dir, usingEdgeMaterial));
+            tile.EdgeTiles.Add(new EdgeTile(usingTileMaterial, vari, 
+                (EdgeTile.Direction)dir, usingEdgeMaterial));
             MapInterface.OpUpdatedTiles = true;
             return true;
         }
-        public bool AddEdge(Point pt, Map.Tile.EdgeTile.Direction dir, TileId tileMaterial)
+        public bool AddEdge(Point pt, EdgeTile.Direction dir, TileId tileMaterial)
         {
 
 
@@ -630,7 +631,7 @@ namespace MapEditor.mapgen
             int rows = FloorTiles[(int)tileMaterial].numRows;
             ushort vari = (ushort)(((pt.X + pt.Y) / 2 % cols) + (((pt.Y % rows) + 1 + cols 
                 - ((pt.X + pt.Y) / 2) % cols) % rows) * cols);
-            tile.EdgeTiles.Add(new Map.Tile.EdgeTile(tileMaterial, vari, dir, usingEdgeMaterial));
+            tile.EdgeTiles.Add(new EdgeTile(tileMaterial, vari, dir, usingEdgeMaterial));
             return true;
         }
 
@@ -732,7 +733,7 @@ namespace MapEditor.mapgen
             if (tile == null) return false;
 
             System.Collections.ArrayList list = new System.Collections.ArrayList();
-            foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
+            foreach (EdgeTile edge in tile.EdgeTiles)
             {
                 int dir = ReMapVar((int)edge.Dir);
 
@@ -785,7 +786,7 @@ namespace MapEditor.mapgen
             Map.Tile tile = GetTile(x, y);
             if (tile == null) return false;
             System.Collections.ArrayList list = new System.Collections.ArrayList();
-            foreach (Map.Tile.EdgeTile edge in tile.EdgeTiles)
+            foreach (EdgeTile edge in tile.EdgeTiles)
             {
                 int edgeDir = ReMapVar((int)edge.Dir);
                 if (!(edge.Graphic == usingTileMaterial && (edgeDir == dir || (edgeDir == 0 && dir == 5) || (edgeDir == 4 && dir == 6) || (edgeDir == 15 && dir == 6) || (edgeDir == 11 && dir == 5) || (edgeDir == 0 && dir == 1) || (edgeDir == 4 && dir == 1) || (edgeDir == 11 && dir == 12) || (edgeDir == 15 && dir == 12))))
@@ -973,7 +974,7 @@ namespace MapEditor.mapgen
         {
             if (GetTile(pt.X, pt.Y) == null) return;
             Point tilePt = pt;//GetNearestTilePoint(pt); varcount < 20
-            // Map.Tile.EdgeTile.Direction EdgeDir;
+            // EdgeTile.Direction EdgeDir;
             int selectedIndex = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.SelectedIndex;
             string tileName = MainWindow.Instance.mapView.TileMakeNewCtrl.comboIgnoreTile.Items[selectedIndex].ToString();
             TileId indexIgnor = (TileId)FloorTileNames.IndexOf(tileName);
@@ -989,11 +990,11 @@ namespace MapEditor.mapgen
             temTile.Y += y;
 
             Map.Tile tesTile = GetTile(tilePt.X, tilePt.Y);
-            Map.Tile.EdgeTile.Direction Edir = Map.Tile.EdgeTile.Direction.South;
+            EdgeTile.Direction Edir = EdgeTile.Direction.South;
 
-            Map.Tile.EdgeTile.Direction dir1;
-            Map.Tile.EdgeTile.Direction dir2;
-            Map.Tile.EdgeTile.Direction dir3;
+            EdgeTile.Direction dir1;
+            EdgeTile.Direction dir2;
+            EdgeTile.Direction dir3;
             DirSettings DirSetting = new DirSettings();
             DirSetting.Clear();
             Random random = new Random();
@@ -1004,15 +1005,15 @@ namespace MapEditor.mapgen
             // East Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.East;
-            dir2 = Map.Tile.EdgeTile.Direction.North;
-            dir3 = Map.Tile.EdgeTile.Direction.South;
+            dir1 = EdgeTile.Direction.East;
+            dir2 = EdgeTile.Direction.North;
+            dir3 = EdgeTile.Direction.South;
             if (IsTileFromDir(tilePt, dir1))
             {
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 1);
+                EdgeTile ga = getEdge(te1, 1);
 
                 if (ga != null)
                     oo = ga.Graphic;
@@ -1045,7 +1046,7 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.NE = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)10 : Map.Tile.EdgeTile.Direction.NE_Sides;
+                            Edir = varcount < 20 ? (EdgeTile.Direction)10 : EdgeTile.Direction.NE_Sides;
                             done = true;
                         }
                     }
@@ -1059,7 +1060,7 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.SE = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)11 : Map.Tile.EdgeTile.Direction.SE_Sides;
+                            Edir = varcount < 20 ? (EdgeTile.Direction)11 : EdgeTile.Direction.SE_Sides;
                             done = true;
                         }
                     }
@@ -1068,12 +1069,12 @@ namespace MapEditor.mapgen
                         int num = random.Next(3);
                         switch (num)
                         {
-                            case 0: Edir = Map.Tile.EdgeTile.Direction.East_D; break;
-                            case 1: Edir = Map.Tile.EdgeTile.Direction.East_E; break;
+                            case 0: Edir = EdgeTile.Direction.East_D; break;
+                            case 1: Edir = EdgeTile.Direction.East_E; break;
                             default: Edir = dir1; break;
                         }
                         if (varcount < 20)
-                            Edir = (Map.Tile.EdgeTile.Direction)6;
+                            Edir = (EdgeTile.Direction)6;
 
                         DirSetting.E = true;
                         done = true;
@@ -1092,16 +1093,16 @@ namespace MapEditor.mapgen
             // North Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.North;
-            dir2 = Map.Tile.EdgeTile.Direction.West;
-            dir3 = Map.Tile.EdgeTile.Direction.East;
+            dir1 = EdgeTile.Direction.North;
+            dir2 = EdgeTile.Direction.West;
+            dir3 = EdgeTile.Direction.East;
             if (IsTileFromDir(tilePt, dir1))
             {
 
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 5);
+                EdgeTile ga = getEdge(te1, 5);
 
                 if (ga != null)
                     oo = ga.Graphic;
@@ -1132,8 +1133,8 @@ namespace MapEditor.mapgen
                         {
                             DirSetting.NW = true;
                             Edir = varcount < 20 
-                                ? (Map.Tile.EdgeTile.Direction)9 
-                                : Map.Tile.EdgeTile.Direction.NW_Sides;
+                                ? (EdgeTile.Direction)9 
+                                : EdgeTile.Direction.NW_Sides;
                             done = true;
                         }
                     }
@@ -1148,8 +1149,8 @@ namespace MapEditor.mapgen
                         {
                             DirSetting.NE = true;
                             Edir = varcount < 20 
-                                ? (Map.Tile.EdgeTile.Direction)8
-                                : Map.Tile.EdgeTile.Direction.NE_Sides;
+                                ? (EdgeTile.Direction)8
+                                : EdgeTile.Direction.NE_Sides;
                             done = true;
                         }
                     }
@@ -1158,12 +1159,12 @@ namespace MapEditor.mapgen
                         int num = random.Next(3);
                         switch (num)
                         {
-                            case 0: Edir = Map.Tile.EdgeTile.Direction.North_08; break;
-                            case 1: Edir = Map.Tile.EdgeTile.Direction.North_0A; break;
+                            case 0: Edir = EdgeTile.Direction.North_08; break;
+                            case 1: Edir = EdgeTile.Direction.North_0A; break;
                             default: Edir = dir1; break;
                         }
                         if (varcount < 20)
-                            Edir = (Map.Tile.EdgeTile.Direction)4;
+                            Edir = (EdgeTile.Direction)4;
 
                         DirSetting.N = true;
                         done = true;
@@ -1184,9 +1185,9 @@ namespace MapEditor.mapgen
             // West Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.West;
-            dir2 = Map.Tile.EdgeTile.Direction.South;
-            dir3 = Map.Tile.EdgeTile.Direction.North;
+            dir1 = EdgeTile.Direction.West;
+            dir2 = EdgeTile.Direction.South;
+            dir3 = EdgeTile.Direction.North;
 
             if (IsTileFromDir(tilePt, dir1))
             {
@@ -1194,7 +1195,7 @@ namespace MapEditor.mapgen
                 bool done = false;
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 12);
+                EdgeTile ga = getEdge(te1, 12);
 
                 if (ga != null)
                     oo = ga.Graphic;
@@ -1229,8 +1230,8 @@ namespace MapEditor.mapgen
                         {
                             DirSetting.SW = true;
                             Edir = varcount < 20 
-                                ? (Map.Tile.EdgeTile.Direction)8 
-                                : Map.Tile.EdgeTile.Direction.SW_Sides;
+                                ? (EdgeTile.Direction)8 
+                                : EdgeTile.Direction.SW_Sides;
                             done = true;
                         }
                     }
@@ -1245,8 +1246,8 @@ namespace MapEditor.mapgen
                         {
                             DirSetting.NW = true;
                             Edir = varcount < 20 
-                                ? (Map.Tile.EdgeTile.Direction)9 
-                                : Map.Tile.EdgeTile.Direction.NW_Sides;
+                                ? (EdgeTile.Direction)9 
+                                : EdgeTile.Direction.NW_Sides;
                             done = true;
                         }
                     }
@@ -1255,12 +1256,12 @@ namespace MapEditor.mapgen
                         int num = random.Next(3);
                         switch (num)
                         {
-                            case 0: Edir = Map.Tile.EdgeTile.Direction.West_02; break;
-                            case 1: Edir = Map.Tile.EdgeTile.Direction.West_03; break;
+                            case 0: Edir = EdgeTile.Direction.West_02; break;
+                            case 1: Edir = EdgeTile.Direction.West_03; break;
                             default: Edir = dir1; break;
                         }
                         if (varcount < 20)
-                            Edir = (Map.Tile.EdgeTile.Direction)1;
+                            Edir = (EdgeTile.Direction)1;
 
 
                         DirSetting.W = true;
@@ -1282,9 +1283,9 @@ namespace MapEditor.mapgen
             // South Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.South;
-            dir2 = Map.Tile.EdgeTile.Direction.East;
-            dir3 = Map.Tile.EdgeTile.Direction.West;
+            dir1 = EdgeTile.Direction.South;
+            dir2 = EdgeTile.Direction.East;
+            dir3 = EdgeTile.Direction.West;
             if (IsTileFromDir(tilePt, dir1))
             {
                 bool done = false;
@@ -1292,7 +1293,7 @@ namespace MapEditor.mapgen
 
                 TileId oo = te1.graphicId;
 
-                Map.Tile.EdgeTile ga = getEdge(te1, 6);
+                EdgeTile ga = getEdge(te1, 6);
 
                 if (ga != null)
                     oo = ga.Graphic;
@@ -1323,7 +1324,7 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.SE = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)11 : Map.Tile.EdgeTile.Direction.SE_Sides;
+                            Edir = varcount < 20 ? (EdgeTile.Direction)11 : EdgeTile.Direction.SE_Sides;
                             done = true;
                         }
                     }
@@ -1337,7 +1338,7 @@ namespace MapEditor.mapgen
                         if (te1.Graphic == te2.Graphic)
                         {
                             DirSetting.SW = true;
-                            Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)8 : Map.Tile.EdgeTile.Direction.SW_Sides;
+                            Edir = varcount < 20 ? (EdgeTile.Direction)8 : EdgeTile.Direction.SW_Sides;
                             done = true;
                         }
                     }
@@ -1351,13 +1352,13 @@ namespace MapEditor.mapgen
 
                         switch (num)
                         {
-                            case 0: Edir = Map.Tile.EdgeTile.Direction.South_07; break;
-                            case 1: Edir = Map.Tile.EdgeTile.Direction.South_09; break;
+                            case 0: Edir = EdgeTile.Direction.South_07; break;
+                            case 1: Edir = EdgeTile.Direction.South_09; break;
                             default: Edir = dir1; break;
                         }
 
                         if (varcount < 20)
-                            Edir = (Map.Tile.EdgeTile.Direction)3;
+                            Edir = (EdgeTile.Direction)3;
 
                         DirSetting.S = true;
                         done = true;
@@ -1376,13 +1377,13 @@ namespace MapEditor.mapgen
             // NE Tip Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.NE_Tip;
+            dir1 = EdgeTile.Direction.NE_Tip;
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
 
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 16);
+                EdgeTile ga = getEdge(te1, 16);
                 if (ga != null)
                     oo = ga.Graphic;
 
@@ -1396,14 +1397,14 @@ namespace MapEditor.mapgen
                         && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
                     {
 
-                        Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)7 : dir1;
+                        Edir = varcount < 20 ? (EdgeTile.Direction)7 : dir1;
 
                         AddEdge(tilePt, Edir, oo);
                     }
                 }
             }
             if (varcount < 20)
-                Edir = (Map.Tile.EdgeTile.Direction)4;
+                Edir = (EdgeTile.Direction)4;
             /////////////////////////////////////////////////////////////////////// 
             ///////////////////////////////////////////////////////////////////////
             ///////////////////////////////////////////////////////////////////////
@@ -1411,12 +1412,12 @@ namespace MapEditor.mapgen
             // NW Tip Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.NW_Tip;
+            dir1 = EdgeTile.Direction.NW_Tip;
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 19);
+                EdgeTile ga = getEdge(te1, 19);
                 if (ga != null)
                     oo = ga.Graphic;
                 TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
@@ -1427,7 +1428,7 @@ namespace MapEditor.mapgen
                     if (!DirSetting.NW && !DirSetting.NE && !DirSetting.SW && !DirSetting.N 
                         && !DirSetting.W && !isEdgeThere(tilePt, (int)dir1))
                     {
-                        Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)2 : dir1;
+                        Edir = varcount < 20 ? (EdgeTile.Direction)2 : dir1;
                         AddEdge(tilePt, Edir, oo);
                     }
                 }
@@ -1440,12 +1441,12 @@ namespace MapEditor.mapgen
             // SE Tip Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.SE_Tip;
+            dir1 = EdgeTile.Direction.SE_Tip;
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 17);
+                EdgeTile ga = getEdge(te1, 17);
                 if (ga != null)
                     oo = ga.Graphic;
                 TileId ignoreAll = MainWindow.Instance.mapView.EdgeMakeNewCtrl.ignoreAllBox.Checked 
@@ -1456,7 +1457,7 @@ namespace MapEditor.mapgen
                     if (!DirSetting.SE && !DirSetting.NE && !DirSetting.SW && !DirSetting.S 
                         && !DirSetting.E && !isEdgeThere(tilePt, (int)dir1))
                     {
-                        Edir = varcount < 20 ? (Map.Tile.EdgeTile.Direction)5 : dir1;
+                        Edir = varcount < 20 ? (EdgeTile.Direction)5 : dir1;
                         AddEdge(tilePt, Edir, oo);
                     }
                 }
@@ -1469,12 +1470,12 @@ namespace MapEditor.mapgen
             // SW Tip Direction If Statement
             // 
             ///////////////////////////////////////////////////////////////////////
-            dir1 = Map.Tile.EdgeTile.Direction.SW_Tip;
+            dir1 = EdgeTile.Direction.SW_Tip;
             if (IsTileFromDir(tilePt, dir1))
             {
                 Map.Tile te1 = map.Tiles[GetTileFromDir(tilePt, dir1)];
                 TileId oo = te1.graphicId;
-                Map.Tile.EdgeTile ga = getEdge(te1, 18);
+                EdgeTile ga = getEdge(te1, 18);
                 if (ga != null)
                     oo = ga.Graphic;
 
@@ -1501,7 +1502,7 @@ namespace MapEditor.mapgen
 
         private bool isEdgeThere(Point tilePt, int dir)
         {
-            foreach (Map.Tile.EdgeTile edge in map.Tiles[tilePt].EdgeTiles)
+            foreach (EdgeTile edge in map.Tiles[tilePt].EdgeTiles)
             {
                 int edgeDir = ReMapVar((int)edge.Dir);
                 int prop = ReMapVar(dir);
@@ -1512,13 +1513,13 @@ namespace MapEditor.mapgen
             return false;
         }
 
-        private Map.Tile.EdgeTile getEdge(Map.Tile tile, int dir)
+        private EdgeTile getEdge(Map.Tile tile, int dir)
         {
             int count = tile.EdgeTiles.Count;
             if (count < 1)
                 return null;
 
-            Map.Tile.EdgeTile edga = (Map.Tile.EdgeTile)tile.EdgeTiles[count - 1];
+            EdgeTile edga = (EdgeTile)tile.EdgeTiles[count - 1];
 
             int edgeDir = ReMapVar((int)edga.Dir);
             int prop = ReMapVar(dir);
@@ -1529,87 +1530,87 @@ namespace MapEditor.mapgen
             return null;
         }
 
-        private bool IsTileFromDir(Point tilePt, Map.Tile.EdgeTile.Direction EdgeDir)
+        private bool IsTileFromDir(Point tilePt, EdgeTile.Direction EdgeDir)
         {
             return ((GetTileFromDir(tilePt, EdgeDir) != tilePt));
         }
-        private Point GetTileFromDir(Point tilePt, Map.Tile.EdgeTile.Direction EdgeDir)
+        private Point GetTileFromDir(Point tilePt, EdgeTile.Direction EdgeDir)
         {
             Point temPt = tilePt;
 
             switch (EdgeDir)
             {
-                case Map.Tile.EdgeTile.Direction.East:
-                case Map.Tile.EdgeTile.Direction.East_D:
-                case Map.Tile.EdgeTile.Direction.East_E:
+                case EdgeTile.Direction.East:
+                case EdgeTile.Direction.East_D:
+                case EdgeTile.Direction.East_E:
                     {
                         temPt.X += 1;
                         temPt.Y += -1;
                     } break;
 
-                //case Map.Tile.EdgeTile.Direction.NE_Sides:
+                //case EdgeTile.Direction.NE_Sides:
                 //   temPt.X +=
                 //  temPt.Y += 
                 // break;
 
-                case Map.Tile.EdgeTile.Direction.NE_Tip:
+                case EdgeTile.Direction.NE_Tip:
                     {
                         temPt.X += 0;
                         temPt.Y += -2;
                     } break;
 
-                case Map.Tile.EdgeTile.Direction.North:
-                case Map.Tile.EdgeTile.Direction.North_08:
-                case Map.Tile.EdgeTile.Direction.North_0A:
+                case EdgeTile.Direction.North:
+                case EdgeTile.Direction.North_08:
+                case EdgeTile.Direction.North_0A:
                     {
                         temPt.X += -1;
                         temPt.Y += -1;
                     } break;
 
-                //case Map.Tile.EdgeTile.Direction.NW_Sides:
+                //case EdgeTile.Direction.NW_Sides:
                 //   temPt.X +=
                 //  temPt.Y += 
                 // break;
 
-                case Map.Tile.EdgeTile.Direction.NW_Tip:
+                case EdgeTile.Direction.NW_Tip:
                     {
                         temPt.X += -2;
                         temPt.Y += 0;
                     } break;
 
-                // case Map.Tile.EdgeTile.Direction.SE_Sides:
+                // case EdgeTile.Direction.SE_Sides:
                 //    temPt.X +=
                 //   temPt.Y += 
                 //  break;
 
-                case Map.Tile.EdgeTile.Direction.SE_Tip:
+                case EdgeTile.Direction.SE_Tip:
                     {
                         temPt.X += 2;
                         temPt.Y += 0;
                     } break;
 
-                case Map.Tile.EdgeTile.Direction.South:
-                case Map.Tile.EdgeTile.Direction.South_07:
-                case Map.Tile.EdgeTile.Direction.South_09:
+                case EdgeTile.Direction.South:
+                case EdgeTile.Direction.South_07:
+                case EdgeTile.Direction.South_09:
                     {
                         temPt.X += 1;
                         temPt.Y += 1;
                     } break;
 
-                //  case Map.Tile.EdgeTile.Direction.SW_Sides:
+                //  case EdgeTile.Direction.SW_Sides:
                 //     temPt.X +=
                 //    temPt.Y += 
                 //   break;
 
-                case Map.Tile.EdgeTile.Direction.SW_Tip:
+                case EdgeTile.Direction.SW_Tip:
                     {
                         temPt.X += 0;
                         temPt.Y += 2;
                     } break;
 
-                case Map.Tile.EdgeTile.Direction.West:
-                case Map.Tile.EdgeTile.Direction.West_02:
-                case Map.Tile.EdgeTile.Direction.West_03:
+                case EdgeTile.Direction.West:
+                case EdgeTile.Direction.West_02:
+                case EdgeTile.Direction.West_03:
                     {
                         temPt.X += -1;
                         temPt.Y += 1;

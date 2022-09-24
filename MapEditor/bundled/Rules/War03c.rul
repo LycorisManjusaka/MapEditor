@@ -1,0 +1,15 @@
+DirtDark2	GrassNorm	BlendEdge
+DirtDark2	GreenBrick	BlendEdge
+DirtDark2	GrassSparse2	BlendEdge
+GalavaBrownMarble	DirtDark2	BrickEdgeBrown
+GalavaBrownMarble	GreenBrick	BrickEdgeBrown
+GalavaBrownMarble	GrassSparse2	BrickEdgeBrown
+DirtHard	DirtDark2	BlendEdge
+DirtHard	GreenBrick	BlendEdge
+GrassSparse2	GrassNorm	BlendEdge
+DirtLight2	GrassSparse2	BlendEdge
+DirtLight2	GreenBrick	BlendEdge
+WeedsSparse	GreenBrick	BlendEdge
+WeedsSparse	DirtDark2	BlendEdge
+GreenBrick	GrassSparse2	BlendEdge
+RockRed	DirtDark2	BlendEdge

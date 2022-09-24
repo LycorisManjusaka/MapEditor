@@ -2,7 +2,7 @@
 using System.Drawing;
 using System.Windows.Forms;
 using NoxShared;
-//using TileEdgeDirection = NoxShared.Map.Tile.EdgeTile.Direction;
+//using TileEdgeDirection = NoxShared.EdgeTile.Direction;
 using Mode = MapEditor.MapInt.EditMode;
 using MapEditor.render;
 using MapEditor.newgui;
@@ -16,6 +16,7 @@ using System.Linq;
 using System.Drawing.Imaging;
 using MapEditor.BitmapExport;
 using System.IO;
+using static NoxShared.Map.Tile;
 
 namespace MapEditor
 {
@@ -63,10 +64,12 @@ namespace MapEditor
         private TabControl tbMapCopy;
         private TabPage tabPage1;
         private TabPage tabPage2;
-        private RadioButton rbTiles;
-        private RadioButton rbWalls;
         private Button bthEdgeRules;
+        private TabControl tcCopyBitmap;
+        private TabPage tpTiles;
+        public CheckBox cbWallsWithTiles;
         private PatternSelectDialog patternSelectDialog = new PatternSelectDialog();
+        private EdgeRuleForm edgeRuleForm = new EdgeRuleForm();
         
         private Map Map
         {
@@ -2533,7 +2536,7 @@ namespace MapEditor
                     TimeTile subject = new TimeTile();
                     subject.EdgeTiles = new ArrayList();
 
-                    foreach (Map.Tile.EdgeTile edga in tila.EdgeTiles)
+                    foreach (EdgeTile edga in tila.EdgeTiles)
                     {
                         subject.EdgeTiles.Add(edga);
                     }
@@ -2683,7 +2686,7 @@ namespace MapEditor
                 {
                     Map.Tiles.Add(item.Tile.Location, item.Tile);
 
-                    foreach (Map.Tile.EdgeTile edga in item.EdgeTiles)
+                    foreach (EdgeTile edga in item.EdgeTiles)
                         Map.Tiles[item.Tile.Location].EdgeTiles.Add(edga);
                 }
             }
@@ -2866,7 +2869,7 @@ namespace MapEditor
         public class TimeTile
         {
             //public Point Location;
-            public Map.Tile.EdgeTile Edge;
+            public EdgeTile Edge;
             public ArrayList EdgeTiles;
             public Map.Tile Tile;
         }
@@ -2962,7 +2965,7 @@ namespace MapEditor
 
             copyAreaMode = cmdCopyArea.Checked;
         }
-        internal void cmdCopyAll_Click(object sender, EventArgs e)
+        private void cmdCopyAll_Click(object sender, EventArgs e)
         {
             var wholeMap = new Point[] {
                 new Point(0, 0), new Point(0, mapPanel.Height),
@@ -2971,7 +2974,7 @@ namespace MapEditor
 
             CopyArea(wholeMap);
         }
-        internal void cmdPasteArea_CheckedChanged(object sender, EventArgs e)
+        private void cmdPasteArea_CheckedChanged(object sender, EventArgs e)
         {
             MapRenderer.FakeWalls.Clear();
             MapRenderer.FakeTiles.Clear();
@@ -2982,7 +2985,9 @@ namespace MapEditor
                     CopiedArea = (TimeContent)Clipboard.GetData("MapCopy");
                 else if (Clipboard.ContainsImage()) 
                 {
-                   var exporter = new BitmapImporter((Bitmap)Clipboard.GetImage());
+                   var exporter = new BitmapImporter(
+                       (Bitmap)Clipboard.GetImage(), edgeRuleForm.Rules);
+
                    CopiedArea = exporter.ToTiles();
                 }
                 
@@ -3048,33 +3053,34 @@ namespace MapEditor
         {
             CopiedArea = new TimeContent();
 
-            if (rbWalls.Checked)
-            {
-                StoreWalls(poly);
-            }
-            else if (rbTiles.Checked)
+            if (tcCopyBitmap.SelectedIndex == 0)
             {
                 if (CopiedArea.StoredTiles.Count != 0)
                     CopiedArea.StoreTile = CopiedArea.StoredTiles[0].Tile.Location;
 
                 StoreTiles(poly);
 
-                var statFilePath = string.Format(
-                        "{0}\\{1}.stat",
-                        "E:\\Dev\\Nox\\EdgeRules",
-                        Path.GetFileNameWithoutExtension(Map.FileName));
-
+                if (edgeRuleForm.RuleMakingMode)
+                {
+                    edgeRuleForm.Rules = new Analizer(CopiedArea).GetRules();
+                }
+                //
+                //var statFilePath = string.Format(
+                //        "{0}\\{1}.stat",
+                //        "E:\\Dev\\Nox\\EdgeRules",
+                //        Path.GetFileNameWithoutExtension(Map.FileName));
+                //
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromTiles());
-                new Analizer(CopiedArea).EdgeRuleStatisticsToFile(statFilePath);
-                var rules = Analizer.StatsToRules(statFilePath);
-
-                var ruleFilePath = string.Format(
-                    "{0}\\{1}.rul",
-                    "E:\\Dev\\Nox\\EdgeRules",
-                    Path.GetFileNameWithoutExtension(Map.FileName));
-
-                Analizer.RulesToFile(rules, ruleFilePath);
-                Analizer.RulesToFile(rules, "E:\\Dev\\Nox\\EdgeRules\\current.rul");
+                //new Analizer(CopiedArea).EdgeRuleStatisticsToFile(statFilePath);
+                //var rules = Analizer.StatsToRules(statFilePath);
+                //
+                //var ruleFilePath = string.Format(
+                //    "{0}\\{1}.rul",
+                //    "E:\\Dev\\Nox\\EdgeRules",
+                //    Path.GetFileNameWithoutExtension(Map.FileName));
+                //
+                //Analizer.RulesToFile(rules, ruleFilePath);
+                //Analizer.RulesToFile(rules, "E:\\Dev\\Nox\\EdgeRules\\current.rul");
             }
            
             selectionPoly = poly.ToList();
@@ -3643,7 +3649,7 @@ namespace MapEditor
         private Button cmdCopyAll;
         private CheckBox cmdCopyArea;
         private Label label3;
-        internal CheckBox cmdPasteArea;
+        private CheckBox cmdPasteArea;
         private GroupBox groupMapCopy;
         public CheckBox chkCopyObjects;
         public CheckBox chkCopyWalls;
@@ -3734,8 +3740,10 @@ namespace MapEditor
             this.chkCopyWaypoints = new System.Windows.Forms.CheckBox();
             this.chkCopyPolygons = new System.Windows.Forms.CheckBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.rbTiles = new System.Windows.Forms.RadioButton();
-            this.rbWalls = new System.Windows.Forms.RadioButton();
+            this.tcCopyBitmap = new System.Windows.Forms.TabControl();
+            this.tpTiles = new System.Windows.Forms.TabPage();
+            this.cbWallsWithTiles = new System.Windows.Forms.CheckBox();
+            this.bthEdgeRules = new System.Windows.Forms.Button();
             this.cmdPasteArea = new System.Windows.Forms.CheckBox();
             this.cmdCopyAll = new System.Windows.Forms.Button();
             this.cmdCopyArea = new System.Windows.Forms.CheckBox();
@@ -3756,7 +3764,6 @@ namespace MapEditor
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmrFade = new System.Windows.Forms.Timer(this.components);
             this.tmrFadeTicker = new System.Windows.Forms.Timer(this.components);
-            this.bthEdgeRules = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.statusMode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusLocation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMapItem)).BeginInit();
@@ -3779,6 +3786,8 @@ namespace MapEditor
             this.tbMapCopy.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tcCopyBitmap.SuspendLayout();
+            this.tpTiles.SuspendLayout();
             this.scrollPanel.SuspendLayout();
             this.mapPanel.SuspendLayout();
             this.SuspendLayout();
@@ -3804,7 +3813,7 @@ namespace MapEditor
             // 
             this.statusBar.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F);
             this.statusBar.ImeMode = System.Windows.Forms.ImeMode.NoControl;
-            this.statusBar.Location = new System.Drawing.Point(0, 682);
+            this.statusBar.Location = new System.Drawing.Point(0, 811);
             this.statusBar.Name = "statusBar";
             this.statusBar.Panels.AddRange(new System.Windows.Forms.StatusBarPanel[] {
             this.statusMode,
@@ -3860,7 +3869,7 @@ namespace MapEditor
             this.groupAdv.Controls.Add(this.lblMapStatus);
             this.groupAdv.Location = new System.Drawing.Point(-1, 0);
             this.groupAdv.Name = "groupAdv";
-            this.groupAdv.Size = new System.Drawing.Size(250, 680);
+            this.groupAdv.Size = new System.Drawing.Size(250, 809);
             this.groupAdv.TabIndex = 28;
             this.groupAdv.TabStop = false;
             // 
@@ -3934,7 +3943,7 @@ namespace MapEditor
             this.tabMapTools.Location = new System.Drawing.Point(7, 33);
             this.tabMapTools.Name = "tabMapTools";
             this.tabMapTools.SelectedIndex = 0;
-            this.tabMapTools.Size = new System.Drawing.Size(236, 641);
+            this.tabMapTools.Size = new System.Drawing.Size(236, 663);
             this.tabMapTools.TabIndex = 29;
             this.tabMapTools.SelectedIndexChanged += new System.EventHandler(this.TabMapToolsSelectedIndexChanged);
             // 
@@ -3945,7 +3954,7 @@ namespace MapEditor
             this.tabWalls.Location = new System.Drawing.Point(4, 22);
             this.tabWalls.Name = "tabWalls";
             this.tabWalls.Padding = new System.Windows.Forms.Padding(3);
-            this.tabWalls.Size = new System.Drawing.Size(228, 615);
+            this.tabWalls.Size = new System.Drawing.Size(228, 637);
             this.tabWalls.TabIndex = 4;
             this.tabWalls.Text = "Walls";
             // 
@@ -3964,7 +3973,7 @@ namespace MapEditor
             this.tabTiles.Controls.Add(this.TileMakeNewCtrl);
             this.tabTiles.Location = new System.Drawing.Point(4, 22);
             this.tabTiles.Name = "tabTiles";
-            this.tabTiles.Size = new System.Drawing.Size(228, 615);
+            this.tabTiles.Size = new System.Drawing.Size(228, 637);
             this.tabTiles.TabIndex = 5;
             this.tabTiles.Text = "Tiles";
             // 
@@ -3981,7 +3990,7 @@ namespace MapEditor
             this.tabEdges.Controls.Add(this.EdgeMakeNewCtrl);
             this.tabEdges.Location = new System.Drawing.Point(4, 22);
             this.tabEdges.Name = "tabEdges";
-            this.tabEdges.Size = new System.Drawing.Size(228, 615);
+            this.tabEdges.Size = new System.Drawing.Size(228, 637);
             this.tabEdges.TabIndex = 6;
             this.tabEdges.Text = "Edges";
             this.tabEdges.Enter += new System.EventHandler(this.tabEdges_Enter);
@@ -4006,7 +4015,7 @@ namespace MapEditor
             this.tabObjectWps.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(238)));
             this.tabObjectWps.Location = new System.Drawing.Point(4, 22);
             this.tabObjectWps.Name = "tabObjectWps";
-            this.tabObjectWps.Size = new System.Drawing.Size(228, 615);
+            this.tabObjectWps.Size = new System.Drawing.Size(228, 637);
             this.tabObjectWps.TabIndex = 2;
             this.tabObjectWps.Text = "Objects/Waypoints";
             // 
@@ -4491,7 +4500,7 @@ namespace MapEditor
             this.groupMapCopy.Controls.Add(this.cmdCopyArea);
             this.groupMapCopy.Location = new System.Drawing.Point(7, 482);
             this.groupMapCopy.Name = "groupMapCopy";
-            this.groupMapCopy.Size = new System.Drawing.Size(215, 126);
+            this.groupMapCopy.Size = new System.Drawing.Size(215, 151);
             this.groupMapCopy.TabIndex = 38;
             this.groupMapCopy.TabStop = false;
             this.groupMapCopy.Text = "Map Copy";
@@ -4503,7 +4512,7 @@ namespace MapEditor
             this.tbMapCopy.Location = new System.Drawing.Point(11, 49);
             this.tbMapCopy.Name = "tbMapCopy";
             this.tbMapCopy.SelectedIndex = 0;
-            this.tbMapCopy.Size = new System.Drawing.Size(197, 70);
+            this.tbMapCopy.Size = new System.Drawing.Size(197, 98);
             this.tbMapCopy.TabIndex = 43;
             // 
             // tabPage1
@@ -4516,7 +4525,7 @@ namespace MapEditor
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(189, 44);
+            this.tabPage1.Size = new System.Drawing.Size(189, 72);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Data";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -4588,39 +4597,57 @@ namespace MapEditor
             // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.bthEdgeRules);
-            this.tabPage2.Controls.Add(this.rbTiles);
-            this.tabPage2.Controls.Add(this.rbWalls);
+            this.tabPage2.Controls.Add(this.tcCopyBitmap);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(189, 44);
+            this.tabPage2.Size = new System.Drawing.Size(189, 72);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Bitmap";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // rbTiles
+            // tcCopyBitmap
             // 
-            this.rbTiles.AutoSize = true;
-            this.rbTiles.Checked = true;
-            this.rbTiles.Location = new System.Drawing.Point(55, 9);
-            this.rbTiles.Name = "rbTiles";
-            this.rbTiles.Size = new System.Drawing.Size(47, 17);
-            this.rbTiles.TabIndex = 1;
-            this.rbTiles.TabStop = true;
-            this.rbTiles.Text = "Tiles";
-            this.rbTiles.UseVisualStyleBackColor = true;
+            this.tcCopyBitmap.Controls.Add(this.tpTiles);
+            this.tcCopyBitmap.Location = new System.Drawing.Point(6, 6);
+            this.tcCopyBitmap.Name = "tcCopyBitmap";
+            this.tcCopyBitmap.SelectedIndex = 0;
+            this.tcCopyBitmap.Size = new System.Drawing.Size(180, 61);
+            this.tcCopyBitmap.TabIndex = 1;
             // 
-            // rbWalls
+            // tpTiles
             // 
-            this.rbWalls.AutoSize = true;
-            this.rbWalls.Location = new System.Drawing.Point(3, 9);
-            this.rbWalls.Name = "rbWalls";
-            this.rbWalls.Size = new System.Drawing.Size(51, 17);
-            this.rbWalls.TabIndex = 0;
-            this.rbWalls.Text = "Walls";
-            this.rbWalls.UseVisualStyleBackColor = true;
-            this.rbWalls.CheckedChanged += new System.EventHandler(this.rbWalls_CheckedChanged);
+            this.tpTiles.Controls.Add(this.cbWallsWithTiles);
+            this.tpTiles.Controls.Add(this.bthEdgeRules);
+            this.tpTiles.Location = new System.Drawing.Point(4, 22);
+            this.tpTiles.Name = "tpTiles";
+            this.tpTiles.Padding = new System.Windows.Forms.Padding(3);
+            this.tpTiles.Size = new System.Drawing.Size(172, 35);
+            this.tpTiles.TabIndex = 0;
+            this.tpTiles.Text = "Tiles";
+            this.tpTiles.UseVisualStyleBackColor = true;
+            // 
+            // cbWallsWithTiles
+            // 
+            this.cbWallsWithTiles.AutoSize = true;
+            this.cbWallsWithTiles.Enabled = false;
+            this.cbWallsWithTiles.Location = new System.Drawing.Point(9, 10);
+            this.cbWallsWithTiles.Name = "cbWallsWithTiles";
+            this.cbWallsWithTiles.Size = new System.Drawing.Size(52, 17);
+            this.cbWallsWithTiles.TabIndex = 39;
+            this.cbWallsWithTiles.Text = "Walls";
+            this.cbWallsWithTiles.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.cbWallsWithTiles.UseVisualStyleBackColor = true;
+            // 
+            // bthEdgeRules
+            // 
+            this.bthEdgeRules.Location = new System.Drawing.Point(67, 6);
+            this.bthEdgeRules.Name = "bthEdgeRules";
+            this.bthEdgeRules.Size = new System.Drawing.Size(57, 23);
+            this.bthEdgeRules.TabIndex = 2;
+            this.bthEdgeRules.Text = "Rules...";
+            this.bthEdgeRules.UseVisualStyleBackColor = true;
+            this.bthEdgeRules.Click += new System.EventHandler(this.bthEdgeRules_Click);
             // 
             // cmdPasteArea
             // 
@@ -4706,7 +4733,7 @@ namespace MapEditor
             this.scrollPanel.Controls.Add(this.mapPanel);
             this.scrollPanel.Location = new System.Drawing.Point(249, 0);
             this.scrollPanel.Name = "scrollPanel";
-            this.scrollPanel.Size = new System.Drawing.Size(608, 678);
+            this.scrollPanel.Size = new System.Drawing.Size(608, 807);
             this.scrollPanel.TabIndex = 6;
             this.scrollPanel.Scroll += new System.Windows.Forms.ScrollEventHandler(this.scrollPanel_Scroll);
             // 
@@ -4798,23 +4825,13 @@ namespace MapEditor
             this.tmrFadeTicker.Interval = 75;
             this.tmrFadeTicker.Tick += new System.EventHandler(this.tmrFadeTicker_Tick);
             // 
-            // bthEdgeRules
-            // 
-            this.bthEdgeRules.Location = new System.Drawing.Point(108, 6);
-            this.bthEdgeRules.Name = "bthEdgeRules";
-            this.bthEdgeRules.Size = new System.Drawing.Size(75, 23);
-            this.bthEdgeRules.TabIndex = 2;
-            this.bthEdgeRules.Text = "Edges...";
-            this.bthEdgeRules.UseVisualStyleBackColor = true;
-            this.bthEdgeRules.Click += new System.EventHandler(this.bthEdgeRules_Click);
-            // 
             // MapView
             // 
             this.Controls.Add(this.groupAdv);
             this.Controls.Add(this.scrollPanel);
             this.Controls.Add(this.statusBar);
             this.Name = "MapView";
-            this.Size = new System.Drawing.Size(859, 704);
+            this.Size = new System.Drawing.Size(859, 833);
             ((System.ComponentModel.ISupportInitialize)(this.statusMode)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusLocation)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMapItem)).EndInit();
@@ -4841,7 +4858,9 @@ namespace MapEditor
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
+            this.tcCopyBitmap.ResumeLayout(false);
+            this.tpTiles.ResumeLayout(false);
+            this.tpTiles.PerformLayout();
             this.scrollPanel.ResumeLayout(false);
             this.mapPanel.ResumeLayout(false);
             this.ResumeLayout(false);
@@ -4862,7 +4881,7 @@ namespace MapEditor
 
         private void bthEdgeRules_Click(object sender, EventArgs e)
         {
-            
+            edgeRuleForm.Show();
         }
     }
     public static class ExtensionColor

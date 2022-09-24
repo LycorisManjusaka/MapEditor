@@ -1,0 +1,8 @@
+CaveHardTan	CaveHardBrown	BlendEdge
+WoodGray	CaveHardBrown	BrickEdgeBrown
+WoodGray	GreenBrick	BrickEdgeBrown
+GreenBrick	CaveHardBrown	BlendEdge
+DirtLight2	GreenBrick	BlendEdge
+WoodGray2	CaveHardBrown	BrickEdgeBrown
+WoodGray2	CaveHardTan	BrickEdgeBrown
+CaveHardDark	CaveHardBrown	BlendEdge

@@ -1,0 +1,11 @@
+StoneLight	RockDark	MetalSteel
+StoneLight	Lava	MetalElectrum
+StoneLight	TileDark	MetalElectrum
+LOTDBlackMarble	RockDark	BlendEdge
+LOTDBlackMarble	LOTDPitted	BlendEdge
+LOTDBlackMarble	VolcanicCraggy	BlendEdge
+Lava	LOTDPitted	LavaEdgeBlackDirt
+Lava	VolcanicCraggy	LavaEdgeBlackDirt
+Lava	LOTDBlackMarble	LavaEdgeBlackDirt
+TileDark	Lava	BrickEdgeBrown
+RockDark	Lava	BrickEdgeBrown

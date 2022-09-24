@@ -1,0 +1,15 @@
+WaterSwampShallow	SwampGrass	SwampEdge
+WaterSwampDeep	WaterSwampShallow	BlendEdge
+WeedsSparse	SwampGrass	BlendEdge
+DirtLight2	SwampGrass	BlendEdge
+DirtLight2	WeedsSparse	BlendEdge
+GalavaBrick	WeedsSparse	BrickEdgeBrown
+GalavaBrick	DirtLight2	BrickEdgeBrown
+DirtDark2	GreenBrick	BlendEdge
+GreenBrick	WeedsSparse	BlendEdge
+GreenBrick	DirtLight2	BlendEdge
+DirtLighter	GreenBrick	BrickEdgeBrown
+LOTDDark2	LOTDPitted	MetalSteel
+LOTDDark2	LOTDBlackMarble	MetalSteel
+RugBlueNorm	LOTDDark2	MetalSteel
+LOTDPitted	GreenBrick	BrickEdgeBrown

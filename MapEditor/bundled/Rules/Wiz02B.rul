@@ -1,0 +1,12 @@
+LOTDPitted	TileDark	BlendEdge
+TileStarBlack	TileDark	MetalBrass
+RugBlueNorm	TileDark	RugTanLightEdge
+RugBlueNorm	GalavaBrick3	RugTanLightEdge
+StoneLight	LOTDPitted	MetalSteel
+StoneLight	TileDark	MetalBrass
+GalavaBrownMarble	GalavaBrick3	MetalBrass
+RugGreen	GalavaBrick3	RugTanLightEdge
+RugRed	GalavaBrick3	RugTanLightEdge
+RugRed	RugBlueNorm	RugTanLightEdge
+GalavaBrick2	GalavaBrick3	BrickEdgeBrown
+CobblestoneGrayLight	CobblestoneGrayDark	BrickEdgeBrown

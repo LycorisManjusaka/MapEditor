@@ -1,0 +1,15 @@
+RugBlueNorm	LOTDPitted	MetalSteel
+IceFloorDeepBlue	IceFloorDark	BlendEdge
+IceFloorRough	IceFloorDeepBlue	BlendEdge
+IceFloorRough	IceFloorDark	BlendEdge
+LOTDBlackMarble	LOTDTempleFacade	MetalSteel
+LOTDBlackMarble	LOTDDark2	MetalSteel
+LOTDBlackMarble	StoneLight	MetalSteel
+LOTDPitted	LOTDBlackMarble	MetalSteel
+LOTDPitted	LOTDDark	MetalSteel
+LOTDDark2	LOTDPitted	MetalSteel
+LOTDDark2	LOTDDark	MetalSteel
+LOTDDark	IceFloorDark	IceRidge
+LOTDDark	LOTDBlackMarble	MetalSteel
+StoneLight	LOTDPitted	MetalBrass
+StoneLight	LOTDDark	MetalBrass

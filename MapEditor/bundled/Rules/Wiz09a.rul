@@ -1,0 +1,17 @@
+CaveHardTan	CaveHardBrown	BlendEdge
+Water	CaveHardBrown	DirtRidge
+Water	CaveHardTan	DirtRidge
+CaveHardDark	CaveHardBrown	BlendEdge
+WaterSwampShallow	SwampGrass	SwampEdge
+WaterSwampShallow	Black	SwampEdge
+WeedsSparse	SwampGrass	BlendEdge
+WeedsSparse	GrassSparseYellow	BlendEdge
+GrassNorm	WeedsSparse	BlendEdge
+WaterSwampDeep	WaterSwampShallow	BlendEdge
+WaterSwampDeep	SwampGrass	BlendEdge
+GrassSparse2	GrassNorm	BlendEdge
+WoodGray2	SwampGrass	BrickEdgeBrown
+WoodGray2	WeedsSparse	BrickEdgeBrown
+RugBrown	WoodGray2	RugBrownEdge
+RedBrick	WoodGray2	BrickEdgeBrown
+WoodGray	WeedsSparse	BrickEdgeBrown

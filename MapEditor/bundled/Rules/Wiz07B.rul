@@ -1,0 +1,7 @@
+Lava	VolcanicCraggy	LavaEdgeBlackDirt
+Lava	LOTDBlackMarble	LavaEdge
+Lava	CobblestoneBlack	LavaEdgeBlackDirt
+CobblestoneBlack	VolcanicCraggy	BlendEdge
+CobblestoneBlack	LOTDBlackMarble	BlendEdge
+CobblestoneBlack	LOTDPitted	BlendEdge
+LOTDPitted	VolcanicCraggy	BlendEdge
