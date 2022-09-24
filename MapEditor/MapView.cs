@@ -158,7 +158,7 @@ namespace MapEditor
             MapInterface.CurrentMode = Mode.OBJECT_SELECT;
 
             SelectObjectBtn.Checked = true;
-            tbMapCopy.SelectedIndex = 1;
+            tbMapCopy.SelectedIndex = 0;
         }
 
         private void mapPanel_MouseDown(object sender, MouseEventArgs e)
