@@ -208,6 +208,85 @@ namespace NoxShared
             None = 255
         };
 
+        public enum WallId : byte
+        {
+            BrickGray,
+            RockDark,
+            Cobblestone,
+            Dirt,
+            Rock,
+            Volcano,
+            BrickRed,
+            RootDark,
+            Hedge1,
+            Tree,
+            DecidiousWallBrown,
+            Shrub,
+            IronFence,
+            CathedralBlue,
+            CrystalCyan,
+            Log,
+            TristoneBlue,
+            StoneBlue,
+            RootLight,
+            Shard,
+            BrickFancy,
+            BrickPlain,
+            Thorn,
+            CathedralBlueFace,
+            CathedralRed,
+            CathedralRedFace,
+            CathedralGreen,
+            DecidiousWallGreen,
+            MagicWall,
+            DunMirCathedral,
+            CrystalBlue,
+            TristoneGreen,
+            BrickFancyBright,
+            StoneGray,
+            BrickBlue,
+            Dilapidated,
+            AspenSparse,
+            AspenThick,
+            ConiWall1,
+            DecidiousWall,
+            CaveWall,
+            StuccoDarkWood,
+            StuccoLightWood,
+            IceWall,
+            DecidiousWallRed,
+            InvisibleWallSet,
+            BrickCollegiate,
+            DilapidatedShort,
+            AspenTallWall,
+            InvisibleBlockingWallSet,
+            OgreCage,
+            OgreWall,
+            InvisibleStoneWallSet,
+            IronFenceDamaged,
+            StuccoLightWoodDamaged,
+            ManaMineWall,
+            LOTDOrnate,
+            LOTDMagicOrnate,
+            IxTempleWall,
+            SewerWall,
+            CaveWall2,
+            LOTDBrick,
+            BlackWall,
+            GalavaTowerWall,
+            GalavaTownWall,
+            DungeonStone,
+            FieldStoneShort,
+            MagicWallSystemUseOnly,
+            CathedralBlue2,
+            CathedralGreen2,
+            CathedralRed2,
+            DungeonCobble,
+            AncientRuin,
+            AncientRuinShort,
+        };
+
+
         public enum ThingToken : uint
         {
             FLOR = 0x464C4f52,//Floor Tile entry
@@ -1336,7 +1415,9 @@ namespace NoxShared
             NoxBinaryReader rdr = new NoxBinaryReader(GetStream(), CryptApi.NoxCryptFormat.THING);
 
             int floorId = 0, edgeId = 0, wallId = 0;
-            for (ThingToken token = NextToken(rdr); Enum.IsDefined(typeof(ThingToken), token); token = NextToken(rdr))
+            for (ThingToken token = NextToken(rdr); 
+                Enum.IsDefined(typeof(ThingToken), token); 
+                token = NextToken(rdr))
             {
                 if (token == ThingToken.FLOR)
                 {
@@ -1352,8 +1433,10 @@ namespace NoxShared
                 }
                 else if (token == ThingToken.WALL)
                 {
-                    Wall wall = new Wall(rdr.BaseStream);
-                    wall.Id = wallId++;
+                    Wall wall = new Wall(rdr.BaseStream)
+                    {
+                        Id = wallId++
+                    };
                     Walls.Add(wall);
                 }
                 else if (token == ThingToken.AUD)

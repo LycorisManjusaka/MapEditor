@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using NoxShared;
 using MapEditor.MapInt;
 using MapEditor.videobag;
+using static NoxShared.ThingDb;
 
 namespace MapEditor.newgui
 {
@@ -176,14 +177,14 @@ namespace MapEditor.newgui
             }
 
         }
-        public byte GetSelWallTypeIndex()
+        public WallId GetSelWallTypeIndex()
         {
             int selectedIndex = comboWallSet.SelectedIndex;
 
             string wallName = RemoveSpace(comboWallSet.Items[selectedIndex].ToString());
-            int index = ThingDb.WallNames.IndexOf(wallName);
+            int index = WallNames.IndexOf(wallName);
 
-            if (index > 0) return (byte)index;
+            if (index > 0) return (WallId)index;
             return 0;
         }
 
@@ -192,7 +193,7 @@ namespace MapEditor.newgui
         /// </summary>
         public Map.Wall NewWall(Point location, bool fake = false)
         {
-            byte material = GetSelWallTypeIndex();
+            WallId material = GetSelWallTypeIndex();
             Map.Wall.WallFacing facing = (Map.Wall.WallFacing)wallFacing;
 
             Map.Wall wall = new Map.Wall(location, facing, material, (byte)MinimapGroup, (byte)numWallVari.Value);
@@ -252,13 +253,13 @@ namespace MapEditor.newgui
             if (numWallVariMax.Value < numWallVari.Value)
                 numWallVariMax.Value = numWallVari.Value;
 
-            ThingDb.Wall wall = ThingDb.Walls[GetSelWallTypeIndex()];
+            Wall wall = Walls[(int)GetSelWallTypeIndex()];
             // в движке Нокса зачем-то так
             int vari = (int)numWallVari.Value * 2;
-            ThingDb.Wall.WallRenderInfo[] ria;
+            Wall.WallRenderInfo[] ria;
             Bitmap bitmap; int sprite; Button wallButton;
 
-            byte material = GetSelWallTypeIndex();
+            WallId material = GetSelWallTypeIndex();
 
             ria = wall.RenderNormal[0];
             int hoho = ria.Length;

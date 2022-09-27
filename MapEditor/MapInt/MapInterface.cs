@@ -528,9 +528,9 @@ namespace MapEditor.MapInt
 
             if (wall != null)
             {
-                OldWall3.Add((byte)WallGet(pt).matId);
-                OldWall3.Add((byte)WallGet(pt).Variation);
-                OldWall3.Add((Map.Wall.WallFacing)WallGet(pt).Facing);
+                OldWall3.Add(WallGet(pt).matId);
+                OldWall3.Add((WallId)WallGet(pt).Variation);
+                OldWall3.Add(WallGet(pt).Facing);
             }
 
             // if(OldWall != null)
@@ -698,7 +698,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             else if (wmm != null && wpm != null && wmp == null)
@@ -719,7 +721,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             else if (wpp != null && wpm != null && wmm == null)
@@ -739,7 +743,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2]
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             else if (wpp != null && wmp != null)
@@ -759,7 +765,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             else if (wmm != null && wmp != null)
@@ -779,7 +787,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2]
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
 
@@ -836,7 +846,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             if (wmm != null || wpp != null)
@@ -870,7 +882,9 @@ namespace MapEditor.MapInt
                     OpUpdatedWalls = true;
                     return wall;//false
                 }
-                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+                else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                    || wall.matId != (WallId)OldWall3[0] 
+                    || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
                 return wall;//false
             }
             if (OldWall == null)
@@ -878,7 +892,9 @@ namespace MapEditor.MapInt
                 OpUpdatedWalls = true;
                 return wall;//false
             }
-            else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] || wall.matId != (byte)OldWall3[0] || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
+            else if (wall.Facing != (Map.Wall.WallFacing)OldWall3[2] 
+                || wall.matId != (WallId)OldWall3[0] 
+                || (byte)OldWall3[1] != wall.Variation) OpUpdatedWalls = true;
             return wall;//false
         }
         #endregion

@@ -31,7 +31,7 @@ namespace MapEditor.mapgen
         private string[] edgeMaterialNames = ThingDb.EdgeTileNames.ToArray();
         private List<Point> tilesScanned = new List<Point>();
         private TileId autoedgeIgnoreTile = (TileId)255;
-        private byte usingWallMaterial = 0;
+        private WallId usingWallMaterial = (WallId)0;
         public TileId usingTileMaterial = 0;
         private EdgeId usingEdgeMaterial = 0;
         private byte varcount = 0;
@@ -85,7 +85,7 @@ namespace MapEditor.mapgen
         /// </summary>
         public void SetWallMaterial(string materialString)
         {
-            usingWallMaterial = (byte)Array.IndexOf(wallMaterialNames, materialString);
+            usingWallMaterial = (WallId)Array.IndexOf(wallMaterialNames, materialString);
         }
 
         /// <summary>

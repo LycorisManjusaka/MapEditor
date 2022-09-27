@@ -8,6 +8,7 @@ using System.Text;
 using static MapEditor.BitmapExport.BitmapImporter;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
+using static MapEditor.BitmapExport.BitmapCommon;
 
 namespace MapEditor.BitmapExport
 {
@@ -332,47 +333,7 @@ namespace MapEditor.BitmapExport
             }
         }
 
-        private static bool EdgeIncludesTile(EdgeId edgeId)
-        {
-            return edgeId == EdgeId.LavaEdge
-                || edgeId == EdgeId.GrassEdge
-                || edgeId == EdgeId.BlendEdge
-                || edgeId == EdgeId.DenseGrassEdge
-                || edgeId == EdgeId.YellowDenseGrassEdge
-                || edgeId == EdgeId.DirtRidge
-                || edgeId == EdgeId.IceRidge
-                || edgeId == EdgeId.BrickEdgeBrown
-                || edgeId == EdgeId.CobbleStoneTrim
-                || edgeId == EdgeId.LavaEdgeBrownDirt
-                || edgeId == EdgeId.LavaEdgeBlackDirt
-                || edgeId == EdgeId.ShallowWaterAndGrass
-                || edgeId == EdgeId.SwampEdge;
-        }
 
-        private static BaseDir GetOppositeDir(BaseDir dir)
-        {
-            switch (dir)
-            {
-                case BaseDir.West:
-                    return BaseDir.East;
-                case BaseDir.South:
-                    return BaseDir.North;
-                case BaseDir.North:
-                    return BaseDir.South;
-                case BaseDir.East:
-                    return BaseDir.West;
-                case BaseDir.SW:
-                    return BaseDir.NE;
-                case BaseDir.NE:
-                    return BaseDir.SW;
-                case BaseDir.NW:
-                    return BaseDir.SE;
-                case BaseDir.SE:
-                    return BaseDir.NW;
-                default:
-                    return BaseDir.None;
-            }
-        }
 
         private MapView.TimeTile[,] MakeTile2dMap()
         {

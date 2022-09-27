@@ -69,6 +69,7 @@ namespace MapEditor
         private TabPage tpTiles;
         public CheckBox cbWallsWithTiles;
         private PatternSelectDialog patternSelectDialog = new PatternSelectDialog();
+        private TabPage tpWalls;
         private EdgeRuleForm edgeRuleForm = new EdgeRuleForm();
         
         private Map Map
@@ -158,7 +159,9 @@ namespace MapEditor
             MapInterface.CurrentMode = Mode.OBJECT_SELECT;
 
             SelectObjectBtn.Checked = true;
-            tbMapCopy.SelectedIndex = 0;
+
+            tbMapCopy.SelectedIndex = 1;
+            tcCopyBitmap.SelectedIndex = 1;
         }
 
         private void mapPanel_MouseDown(object sender, MouseEventArgs e)
@@ -3064,25 +3067,15 @@ namespace MapEditor
                 {
                     edgeRuleForm.Rules = new Analizer(CopiedArea).GetRules();
                 }
-                //
-                //var statFilePath = string.Format(
-                //        "{0}\\{1}.stat",
-                //        "E:\\Dev\\Nox\\EdgeRules",
-                //        Path.GetFileNameWithoutExtension(Map.FileName));
-                //
+
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromTiles());
-                //new Analizer(CopiedArea).EdgeRuleStatisticsToFile(statFilePath);
-                //var rules = Analizer.StatsToRules(statFilePath);
-                //
-                //var ruleFilePath = string.Format(
-                //    "{0}\\{1}.rul",
-                //    "E:\\Dev\\Nox\\EdgeRules",
-                //    Path.GetFileNameWithoutExtension(Map.FileName));
-                //
-                //Analizer.RulesToFile(rules, ruleFilePath);
-                //Analizer.RulesToFile(rules, "E:\\Dev\\Nox\\EdgeRules\\current.rul");
             }
-           
+            else if (tcCopyBitmap.SelectedIndex == 1)
+            {
+                StoreWalls(poly);
+                Clipboard.SetImage(new BitmapExporter(CopiedArea).FromWalls());
+            }
+
             selectionPoly = poly.ToList();
             selectionPoly.Add(poly[0]);
 
@@ -3764,6 +3757,7 @@ namespace MapEditor
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmrFade = new System.Windows.Forms.Timer(this.components);
             this.tmrFadeTicker = new System.Windows.Forms.Timer(this.components);
+            this.tpWalls = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.statusMode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusLocation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMapItem)).BeginInit();
@@ -4609,6 +4603,7 @@ namespace MapEditor
             // tcCopyBitmap
             // 
             this.tcCopyBitmap.Controls.Add(this.tpTiles);
+            this.tcCopyBitmap.Controls.Add(this.tpWalls);
             this.tcCopyBitmap.Location = new System.Drawing.Point(6, 6);
             this.tcCopyBitmap.Name = "tcCopyBitmap";
             this.tcCopyBitmap.SelectedIndex = 0;
@@ -4824,6 +4819,15 @@ namespace MapEditor
             // 
             this.tmrFadeTicker.Interval = 75;
             this.tmrFadeTicker.Tick += new System.EventHandler(this.tmrFadeTicker_Tick);
+            // 
+            // tpWalls
+            // 
+            this.tpWalls.Location = new System.Drawing.Point(4, 22);
+            this.tpWalls.Name = "tpWalls";
+            this.tpWalls.Size = new System.Drawing.Size(172, 35);
+            this.tpWalls.TabIndex = 1;
+            this.tpWalls.Text = "Walls";
+            this.tpWalls.UseVisualStyleBackColor = true;
             // 
             // MapView
             // 

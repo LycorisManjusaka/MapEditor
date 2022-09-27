@@ -133,6 +133,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="BitmapExport\Analizer.cs" />
+    <Compile Include="BitmapExport\BitmapCommon.cs" />
     <Compile Include="BitmapExport\BitmapExporter.cs" />
     <Compile Include="BitmapExport\BitmapImporter.cs" />
     <Compile Include="EdgeRuleForm.cs">

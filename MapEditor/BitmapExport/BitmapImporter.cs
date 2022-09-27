@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
+using static MapEditor.BitmapExport.BitmapCommon;
 
 namespace MapEditor.BitmapExport
 {
@@ -16,11 +17,11 @@ namespace MapEditor.BitmapExport
     {
         private readonly Bitmap bitmap;
         private const int pointCount = 252;
-        private const TileId invalid = TileId.Invalid;
         private readonly Dictionary<uint, TileId> colorMap = new Dictionary<uint, TileId>();       
         
         private readonly Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules 
             = new Dictionary<TileId, Dictionary<TileId, EdgeId>>();
+
         private HashSet<TileId> usedTileIds;
         private TileId[,] typeMap;
         private MapView.TimeTile[,] tile2dMap;
@@ -32,18 +33,8 @@ namespace MapEditor.BitmapExport
         public const BaseDir NW = BaseDir.NW;
         public const BaseDir NE = BaseDir.NE;
         public const BaseDir SW = BaseDir.SW;
-        public static readonly Dictionary<BaseDir, int[]> OffsetMap
-            = new Dictionary<BaseDir, int[]>
-            {
-                { South, new int[]{ -1, -1 } },
-                { North, new int[]{ 1, 1 } },
-                { East, new int[]{ -1, 1 } },
-                { West, new int[]{ 1, -1 } },
-                { SE, new int[]{ -2, 0} },
-                { NW, new int[]{ 2, 0} },
-                { NE, new int[]{ 0, 2} },
-                { SW, new int[]{ 0, -2} }
-            };
+
+
 
         public BitmapImporter(
             Bitmap bitmap, Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules)
@@ -64,202 +55,6 @@ namespace MapEditor.BitmapExport
             return MakeResult();
         }
 
-        public static EdgeBaseDir ToEdgeBaseDir(EdgeTile.Direction dir, EdgeId edgeId)
-        {
-            var edgeGroup = GetEdgeGroup(edgeId);
-
-            if (edgeGroup == EdgeGroup.Usual)
-            {
-                if (dir == EdgeTile.Direction.East ||
-                   dir == EdgeTile.Direction.East_D ||
-                   dir == EdgeTile.Direction.East_E)
-                    return EdgeBaseDir.East;
-
-                else if (dir == EdgeTile.Direction.NE_Tip)
-                    return EdgeBaseDir.NE_Tip;
-                else if (dir == EdgeTile.Direction.NE_Sides)
-                    return EdgeBaseDir.NE_Sides;
-
-                else if (dir == EdgeTile.Direction.North ||
-                         dir == EdgeTile.Direction.North_08 ||
-                         dir == EdgeTile.Direction.North_0A)
-                    return EdgeBaseDir.North;
-
-                else if (dir == EdgeTile.Direction.NW_Tip)
-                    return EdgeBaseDir.NW_Tip;
-                else if (dir == EdgeTile.Direction.NW_Sides)
-                    return EdgeBaseDir.NW_Sides;
-
-                else if (dir == EdgeTile.Direction.SE_Tip)
-                    return EdgeBaseDir.SE_Tip;
-                else if (dir == EdgeTile.Direction.SE_Sides)
-                    return EdgeBaseDir.SE_Sides;
-
-                else if (dir == EdgeTile.Direction.South ||
-                         dir == EdgeTile.Direction.South_07 ||
-                         dir == EdgeTile.Direction.South_09)
-                    return EdgeBaseDir.South;
-
-                else if (dir == EdgeTile.Direction.SW_Tip)
-                    return EdgeBaseDir.SW_Tip;
-                else if (dir == EdgeTile.Direction.SW_Sides)
-                    return EdgeBaseDir.SW_Sides;
-
-                else if (dir == EdgeTile.Direction.West ||
-                         dir == EdgeTile.Direction.West_02 ||
-                         dir == EdgeTile.Direction.West_03)
-                    return EdgeBaseDir.West;
-            }
-            else
-            {
-                if (dir == EdgeTile.Direction.NW_Tip)
-                    return EdgeBaseDir.North;
-                else if (dir == EdgeTile.Direction.West_03)
-                    return EdgeBaseDir.South;
-                else if (dir == EdgeTile.Direction.West)
-                    return EdgeBaseDir.West;
-                else if (dir == EdgeTile.Direction.North)
-                    return EdgeBaseDir.East;
-
-                else if (dir == EdgeTile.Direction.South_07)
-                    return EdgeBaseDir.NE_Tip;
-                else if (dir == EdgeTile.Direction.North_0A)
-                    return EdgeBaseDir.NE_Sides;
-
-                else if (dir == EdgeTile.Direction.West_02)
-                    return EdgeBaseDir.NW_Tip;
-                else if (dir == EdgeTile.Direction.South_09)
-                    return EdgeBaseDir.NW_Sides;
-
-                else if (dir == EdgeTile.Direction.South)
-                    return EdgeBaseDir.SE_Tip;
-                else if (dir == EdgeTile.Direction.SE_Tip)
-                    return EdgeBaseDir.SE_Sides;
-
-                else if (dir == EdgeTile.Direction.SW_Tip)
-                    return EdgeBaseDir.SW_Tip;
-                else if (dir == EdgeTile.Direction.North_08)
-                    return EdgeBaseDir.SW_Sides;
-            }
-            return EdgeBaseDir.None;
-        }
-
-        private static EdgeGroup GetEdgeGroup(EdgeId edgeId)
-        {
-            if (edgeId == EdgeId.DirtDarkedge
-                || edgeId == EdgeId.GrassSparseEdge
-                || edgeId == EdgeId.MudEdge)
-                return EdgeGroup.Odd;
-            else
-                return EdgeGroup.Usual;
-        }
-
-        public static EdgeTile.Direction ToEdgeTileDirection(EdgeBaseDir dir, EdgeId edgeId)
-        {
-            var edgeGroup = GetEdgeGroup(edgeId);
-            if (edgeGroup == EdgeGroup.Usual)
-            {
-                EdgeTile.Direction res = (EdgeTile.Direction)255;
-                if (dir == EdgeBaseDir.East)
-                    res = EdgeTile.Direction.East;
-
-                else if (dir == EdgeBaseDir.NE_Tip)
-                    res = EdgeTile.Direction.NE_Tip;
-                else if (dir == EdgeBaseDir.NE_Sides)
-                    res = EdgeTile.Direction.NE_Sides;
-
-                else if (dir == EdgeBaseDir.North)
-                    res = EdgeTile.Direction.North;
-
-                else if (dir == EdgeBaseDir.NW_Tip)
-                    res = EdgeTile.Direction.NW_Tip;
-                else if (dir == EdgeBaseDir.NW_Sides)
-                    res = EdgeTile.Direction.NW_Sides;
-
-                else if (dir == EdgeBaseDir.SE_Tip)
-                    res = EdgeTile.Direction.SE_Tip;
-                else if (dir == EdgeBaseDir.SE_Sides)
-                    res = EdgeTile.Direction.SE_Sides;
-
-                else if (dir == EdgeBaseDir.South)
-                    res = EdgeTile.Direction.South;
-
-                else if (dir == EdgeBaseDir.SW_Tip)
-                    res = EdgeTile.Direction.SW_Tip;
-                else if (dir == EdgeBaseDir.SW_Sides)
-                    res = EdgeTile.Direction.SW_Sides;
-
-                else if (dir == EdgeBaseDir.West)
-                    res = EdgeTile.Direction.West;
-                var edgeDir = EdgeMakeTab.GetRandomVariation(res);
-                return edgeDir;
-            }
-            else
-            {
-                if (dir == EdgeBaseDir.North)
-                    return EdgeTile.Direction.NW_Tip;
-                else if (dir == EdgeBaseDir.South)
-                    return EdgeTile.Direction.West_03;
-                else if (dir == EdgeBaseDir.West)
-                    return EdgeTile.Direction.West;
-                else if (dir == EdgeBaseDir.East)
-                    return EdgeTile.Direction.North;
-
-                else if (dir == EdgeBaseDir.NE_Tip)
-                    return EdgeTile.Direction.South_07;
-                else if (dir == EdgeBaseDir.NE_Sides)
-                    return EdgeTile.Direction.North_0A;
-
-                else if (dir == EdgeBaseDir.NW_Tip)
-                    return EdgeTile.Direction.West_02;
-                else if (dir == EdgeBaseDir.NW_Sides)
-                    return EdgeTile.Direction.South_09;
-
-                else if (dir == EdgeBaseDir.SE_Tip)
-                    return EdgeTile.Direction.South;
-                else if (dir == EdgeBaseDir.SE_Sides)
-                    return EdgeTile.Direction.SE_Tip;
-
-                else if (dir == EdgeBaseDir.SW_Tip)
-                    return EdgeTile.Direction.SW_Tip;
-                else if (dir == EdgeBaseDir.SW_Sides)
-                    return EdgeTile.Direction.North_08;
-            }
-            return (EdgeTile.Direction)255;
-        }
-
-        public static BaseDir ToBaseDir(EdgeTile.Direction dir, EdgeId edgeId)
-        {
-            return ToBaseDir(ToEdgeBaseDir(dir, edgeId));
-        }
-
-        public static BaseDir ToBaseDir(EdgeBaseDir dir)
-        {
-            if (dir == EdgeBaseDir.East)
-                return BaseDir.East;
-
-            else if (dir == EdgeBaseDir.NE_Tip || dir == EdgeBaseDir.NE_Sides)
-                return BaseDir.NE;
-
-            else if (dir == EdgeBaseDir.North)
-                return BaseDir.North;
-
-            else if (dir == EdgeBaseDir.NW_Tip || dir == EdgeBaseDir.NW_Sides)
-                return BaseDir.NW;
-
-            else if (dir == EdgeBaseDir.SE_Tip || dir == EdgeBaseDir.SE_Sides)
-                return BaseDir.SE;
-
-            else if (dir == EdgeBaseDir.South)
-                return BaseDir.South;
-
-            else if (dir == EdgeBaseDir.SW_Tip || dir == EdgeBaseDir.SW_Sides)
-                return BaseDir.SW;
-
-            else if (dir == EdgeBaseDir.West)
-                return BaseDir.West;
-            return 0;
-        }
 
 
         private void MakeTile2dMap()
@@ -336,17 +131,7 @@ namespace MapEditor.BitmapExport
             }
         }
 
-        private static ushort GetTileVariation(TileId graphicsId, Point tilePoint)
-        {
-            int x = tilePoint.X % pointCount;
-            int y = tilePoint.Y % pointCount;
-            int cols = FloorTiles[(int)graphicsId].numCols;
-            int rows = FloorTiles[(int)graphicsId].numRows;
 
-            ushort vari = (ushort)(((x + y) / 2 % cols) + ((y % rows) + 1 + cols
-                - (x + y) / 2 % cols) % rows * cols);
-            return vari;
-        }
 
         private void AddEdges()
         {
@@ -537,115 +322,11 @@ namespace MapEditor.BitmapExport
             timeTileDst.EdgeTiles = tileDst.EdgeTiles;
         }
 
-        private bool Compatible(EdgeBaseDir dir1, EdgeBaseDir dir2)
-        {
-            return
-                dir1 == EdgeBaseDir.East && (
-                   dir2 == EdgeBaseDir.North
-                || dir2 == EdgeBaseDir.South
-                || dir2 == EdgeBaseDir.West
-                || dir2 == EdgeBaseDir.NW_Sides
-                || dir2 == EdgeBaseDir.SW_Sides
-                || dir2 == EdgeBaseDir.NW_Tip
-                || dir2 == EdgeBaseDir.SW_Tip)
-                ||
-                dir1 == EdgeBaseDir.West && (
-                   dir2 == EdgeBaseDir.North
-                || dir2 == EdgeBaseDir.South
-                || dir2 == EdgeBaseDir.East
-                || dir2 == EdgeBaseDir.NE_Sides
-                || dir2 == EdgeBaseDir.SE_Sides
-                || dir2 == EdgeBaseDir.NE_Tip
-                || dir2 == EdgeBaseDir.SE_Tip)
-                ||
-                dir1 == EdgeBaseDir.North && (
-                   dir2 == EdgeBaseDir.West
-                || dir2 == EdgeBaseDir.South
-                || dir2 == EdgeBaseDir.East
-                || dir2 == EdgeBaseDir.SE_Sides
-                || dir2 == EdgeBaseDir.SW_Sides
-                || dir2 == EdgeBaseDir.SE_Tip
-                || dir2 == EdgeBaseDir.SW_Tip)
-                ||
-                dir1 == EdgeBaseDir.South && (
-                   dir2 == EdgeBaseDir.West
-                || dir2 == EdgeBaseDir.North
-                || dir2 == EdgeBaseDir.East
-                || dir2 == EdgeBaseDir.NE_Sides
-                || dir2 == EdgeBaseDir.NW_Sides
-                || dir2 == EdgeBaseDir.NE_Tip
-                || dir2 == EdgeBaseDir.NW_Tip)
-                ||            
-                (dir1 == EdgeBaseDir.NW_Sides 
-                || dir1 == EdgeBaseDir.NW_Tip) && (
-                   dir2 == EdgeBaseDir.South
-                || dir2 == EdgeBaseDir.East
-                || dir2 == EdgeBaseDir.SE_Sides
-                || dir2 == EdgeBaseDir.SE_Tip)                
-                ||            
-                (dir1 == EdgeBaseDir.SE_Sides 
-                || dir1 == EdgeBaseDir.SE_Tip) && (
-                   dir2 == EdgeBaseDir.North
-                || dir2 == EdgeBaseDir.West
-                || dir2 == EdgeBaseDir.NW_Sides
-                || dir2 == EdgeBaseDir.NW_Tip)               
-                ||            
-                (dir1 == EdgeBaseDir.SW_Sides 
-                || dir1 == EdgeBaseDir.SW_Tip) && (
-                   dir2 == EdgeBaseDir.North
-                || dir2 == EdgeBaseDir.East
-                || dir2 == EdgeBaseDir.NE_Sides
-                || dir2 == EdgeBaseDir.NE_Tip)                
-                ||            
-                (dir1 == EdgeBaseDir.NE_Sides 
-                || dir1 == EdgeBaseDir.NE_Tip) && (
-                   dir2 == EdgeBaseDir.South
-                || dir2 == EdgeBaseDir.West
-                || dir2 == EdgeBaseDir.SW_Sides
-                || dir2 == EdgeBaseDir.SW_Tip)
-                ;
-
-        }
-
-        private static EdgeBaseDir GetSideDir(EdgeBaseDir dir)
-        {
-            switch (dir)
-            {
-                case EdgeBaseDir.West:
-                    return EdgeBaseDir.North;
-                case EdgeBaseDir.South:
-                    return EdgeBaseDir.East;
-                case EdgeBaseDir.North:
-                    return EdgeBaseDir.West;
-                case EdgeBaseDir.East:
-                    return EdgeBaseDir.South;
-
-                case EdgeBaseDir.SW_Tip:
-                    return EdgeBaseDir.NE_Tip;
-                case EdgeBaseDir.SW_Sides:
-                    return EdgeBaseDir.NE_Sides;
-                case EdgeBaseDir.NE_Tip:
-                    return EdgeBaseDir.SW_Tip;
-                case EdgeBaseDir.NE_Sides:
-                    return EdgeBaseDir.SW_Sides;
-
-                case EdgeBaseDir.NW_Tip:
-                    return EdgeBaseDir.NW_Tip;
-                case EdgeBaseDir.NW_Sides:
-                    return EdgeBaseDir.NW_Sides;
-                case EdgeBaseDir.SE_Tip:
-                    return EdgeBaseDir.SE_Tip;
-                case EdgeBaseDir.SE_Sides:
-                    return EdgeBaseDir.SE_Sides;
-                default:
-                    return EdgeBaseDir.East;
-            }
-        }
 
         private TileId Id(int i, int j)
         {
             if (i < 0 || j < 0 || i >= typeMap.GetLength(0) || j >= typeMap.GetLength(1))
-                return invalid;
+                return TileId.Invalid;
             return typeMap[i, j];
         }
 
@@ -660,7 +341,7 @@ namespace MapEditor.BitmapExport
             return Id(i, j);
         }
 
-        MapView.TimeTile GetTile(
+        private MapView.TimeTile GetTile(
             int baseI, int baseJ, BaseDir dir = BaseDir.None)
         {
             int i = baseI;
@@ -676,24 +357,7 @@ namespace MapEditor.BitmapExport
             return tile2dMap[i, j];
         }
 
-        public static TileId[,] MakeTypeMap(MapView.TimeTile[,] tile2dMap)
-        {
-            TileId[,] types = new TileId[tile2dMap.GetLength(0), tile2dMap.GetLength(1)];
-
-            for (int i = 0; i < tile2dMap.GetLength(0); ++i)
-            {
-                for (int j = 0; j < tile2dMap.GetLength(1); ++j)
-                {
-                    var timeTile = tile2dMap[i, j];
-                    if (timeTile == null)
-                        types[i, j] = invalid;
-                    else
-                        types[i, j] = timeTile.Tile.graphicId;
-                }
-            }
-
-            return types;
-        }
+        
 
         private MapView.TimeContent MakeResult()
         {
@@ -713,43 +377,23 @@ namespace MapEditor.BitmapExport
             return res;
         }
 
-
-
-        public enum EdgeGroup
+        private static TileId[,] MakeTypeMap(MapView.TimeTile[,] tile2dMap)
         {
-            Usual,
-            Odd
+            TileId[,] types = new TileId[tile2dMap.GetLength(0), tile2dMap.GetLength(1)];
+
+            for (int i = 0; i < tile2dMap.GetLength(0); ++i)
+            {
+                for (int j = 0; j < tile2dMap.GetLength(1); ++j)
+                {
+                    var timeTile = tile2dMap[i, j];
+                    if (timeTile == null)
+                        types[i, j] = TileId.Invalid;
+                    else
+                        types[i, j] = timeTile.Tile.graphicId;
+                }
+            }
+
+            return types;
         }
-
-
-        public enum BaseDir
-        {
-            South,
-            North,
-            East,
-            West,
-            SE,
-            NW,
-            NE,
-            SW,
-            None,
-        };
-
-        public enum EdgeBaseDir
-        {
-            South,
-            North,
-            East,
-            West,
-            SE_Tip,
-            NW_Tip,
-            NE_Tip,
-            SW_Tip,
-            SE_Sides,
-            NW_Sides,
-            NE_Sides,
-            SW_Sides,
-            None,
-        };
     }
 }

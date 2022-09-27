@@ -1750,7 +1750,7 @@ namespace NoxShared
             //TODO: Make a list of all types and have a string
             //perhaps add these in the NoxTypes namespace?
             public WallFacing Facing;
-            public byte matId;
+            public WallId matId;
             public byte Variation;
             public byte Minimap = 0x64;
             protected byte wallModifiedMB;
@@ -1768,7 +1768,7 @@ namespace NoxShared
             {
                 get
                 {
-                    return ThingDb.Walls[matId].Variations;
+                    return ThingDb.Walls[(int)matId].Variations;
                 }
             }
 
@@ -1793,7 +1793,7 @@ namespace NoxShared
             {
                 get
                 {
-                    return ((ThingDb.Wall)ThingDb.Walls[matId]).Name;
+                    return ThingDb.Walls[(int)matId].Name;
                 }
             }
 
@@ -1802,12 +1802,12 @@ namespace NoxShared
                 Read(stream);
             }
 
-            public Wall(Point loc, WallFacing facing, byte mat)
+            public Wall(Point loc, WallFacing facing, WallId mat)
             {
                 Location = loc; Facing = facing; matId = mat;
             }
 
-            public Wall(Point loc, WallFacing facing, byte mat, byte mmGroup, byte var)
+            public Wall(Point loc, WallFacing facing, WallId mat, byte mmGroup, byte var)
             {
                 Location = loc; Facing = facing; matId = mat; Minimap = mmGroup; Variation = var;
             }
@@ -1817,7 +1817,7 @@ namespace NoxShared
                 BinaryReader rdr = new BinaryReader(stream);
                 Location = new Point(rdr.ReadByte(), rdr.ReadByte());
                 Facing = (WallFacing)(rdr.ReadByte() & 0x7F);//I'm almost certain the sign bit is just garbage and does not signify anything about the wall
-                matId = rdr.ReadByte();
+                matId = (WallId)rdr.ReadByte();
                 Variation = rdr.ReadByte();
                 Minimap = rdr.ReadByte();
                 wallModifiedMB = rdr.ReadByte(); // may be 1 in saved maps
@@ -1848,7 +1848,7 @@ namespace NoxShared
 
             public override string ToString()
             {
-                return String.Format("{0}, {1}", Location.X, Location.Y);
+                return string.Format("{0}, {1}", Location.X, Location.Y);
             }
 
             public Wall Clone()

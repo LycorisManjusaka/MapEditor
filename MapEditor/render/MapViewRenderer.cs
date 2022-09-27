@@ -124,7 +124,7 @@ namespace MapEditor.render
         /// </summary>
         public void DrawTexturedWall(Graphics g, Map.Wall wall, bool transparent, bool beingSelected)
         {
-            ThingDb.Wall tt = ThingDb.Walls[wall.matId];
+            ThingDb.Wall tt = ThingDb.Walls[(int)wall.matId];
             try
             {
                 int actualVari = wall.Variation * 2;
