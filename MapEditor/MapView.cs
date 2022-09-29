@@ -2988,10 +2988,17 @@ namespace MapEditor
                     CopiedArea = (TimeContent)Clipboard.GetData("MapCopy");
                 else if (Clipboard.ContainsImage()) 
                 {
-                   var exporter = new BitmapImporter(
-                       (Bitmap)Clipboard.GetImage(), edgeRuleForm.Rules);
-
-                   CopiedArea = exporter.ToTiles();
+                    if (tcCopyBitmap.SelectedIndex == 0)
+                    {
+                        var importer = new BitmapEdgeImporter(
+                            (Bitmap)Clipboard.GetImage(), edgeRuleForm.Rules);
+                        CopiedArea = importer.ToTiles();
+                    } 
+                    else if (tcCopyBitmap.SelectedIndex == 1)
+                    {
+                        var importer = new BitmapWallImporter((Bitmap)Clipboard.GetImage()); 
+                        CopiedArea = importer.ToWalls();
+                    } 
                 }
                 
                 if (CopiedArea == null)

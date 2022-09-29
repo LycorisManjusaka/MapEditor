@@ -5,7 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using static MapEditor.BitmapExport.BitmapImporter;
+using static MapEditor.BitmapExport.BitmapEdgeImporter;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
 using static MapEditor.BitmapExport.BitmapCommon;

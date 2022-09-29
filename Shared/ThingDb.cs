@@ -284,6 +284,7 @@ namespace NoxShared
             DungeonCobble,
             AncientRuin,
             AncientRuinShort,
+            Invalid
         };
 
 
