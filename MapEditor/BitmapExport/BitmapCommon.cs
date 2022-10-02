@@ -1,10 +1,6 @@
 ﻿using MapEditor.newgui;
-using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using static MapEditor.BitmapExport.BitmapEdgeImporter;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
 
@@ -396,6 +392,30 @@ namespace MapEditor.BitmapExport
             }
         }
 
+        public static BaseDir GetSideDir(BaseDir dir)
+        {
+            switch (dir)
+            {
+                case BaseDir.West:
+                    return BaseDir.North;
+                case BaseDir.South:
+                    return BaseDir.East;
+                case BaseDir.North:
+                    return BaseDir.West;
+                case BaseDir.East:
+                    return BaseDir.South;
+                case BaseDir.SW:
+                    return BaseDir.NE;
+                case BaseDir.NE:
+                    return BaseDir.SW;
+                case BaseDir.NW:
+                    return BaseDir.NW;
+                case BaseDir.SE:
+                    return BaseDir.SE;
+                default:
+                    return BaseDir.East;
+            }
+        }
 
         public enum EdgeGroup
         {
@@ -437,154 +457,187 @@ namespace MapEditor.BitmapExport
         public static Dictionary<WallId, Color> WallColors => new Dictionary<WallId, Color>
         {
             { WallId.AncientRuin,                 Color.FromArgb(190, 203, 23 ) },        //Color.FromArgb(73, 75, 46) },
-            { WallId.AncientRuinShort,		      Color.FromArgb(168, 194, 19 ) },        //Color.FromArgb(63, 67, 40) },
-            { WallId.AspenSparse,		          Color.FromArgb(255, 174, 0  ) },       //Color.FromArgb(138, 108, 44) },
-            { WallId.AspenTallWall,		          Color.FromArgb(255, 162, 0  ) },       //Color.FromArgb(135, 109, 64) },
-            { WallId.AspenThick,		          Color.FromArgb(244, 160, 0  ) },       //Color.FromArgb(117, 86, 27) },
-            { WallId.BlackWall,		              Color.FromArgb(192, 96, 96  ) },       //Color.FromArgb(64, 64, 64) },
-            { WallId.BrickBlue,		              Color.FromArgb(195, 114, 86 ) },        //Color.FromArgb(68, 65, 64) },
-            { WallId.BrickCollegiate,		      Color.FromArgb(219, 142, 52 ) },        //Color.FromArgb(91, 80, 67) },
-            { WallId.BrickFancy,		          Color.FromArgb(210, 149, 77 ) },        //Color.FromArgb(82, 77, 71) },
-            { WallId.BrickFancyBright,		      Color.FromArgb(227, 115, 7  ) },       //Color.FromArgb(100, 76, 53) },
-            { WallId.BrickGray,		              Color.FromArgb(196, 152, 84 ) },        //Color.FromArgb(69, 67, 64) },
-            { WallId.BrickPlain,		          Color.FromArgb(216, 151, 76 ) },        //Color.FromArgb(88, 82, 75) },
-            { WallId.BrickRed,		              Color.FromArgb(178, 85, 0   ) },      //Color.FromArgb(50, 37, 25) },
-            { WallId.CathedralBlue,		          Color.FromArgb(171, 85, 85  ) },       //Color.FromArgb(43, 43, 43) },
-            { WallId.CathedralBlue2,		      Color.FromArgb(45, 96, 206  ) },       //Color.FromArgb(56, 63, 78) },
-            { WallId.CathedralBlueFace,		      Color.FromArgb(168, 122, 76 ) },        //Color.FromArgb(41, 40, 39) },
-            { WallId.CathedralGreen,		      Color.FromArgb(172, 154, 63 ) },        //Color.FromArgb(45, 44, 39) },
-            { WallId.CathedralGreen2,		      Color.FromArgb(79, 208, 105 ) },        //Color.FromArgb(71, 81, 73) },
-            { WallId.CathedralRed,		          Color.FromArgb(174, 101, 64 ) },        //Color.FromArgb(46, 42, 40) },
-            { WallId.CathedralRed2,		          Color.FromArgb(214, 130, 40 ) },        //Color.FromArgb(86, 73, 59) },
-            { WallId.CathedralRedFace,		      Color.FromArgb(168, 118, 68 ) },        //Color.FromArgb(41, 39, 37) },
-            { WallId.CaveWall,		              Color.FromArgb(227, 144, 16 ) },        //Color.FromArgb(100, 83, 57) },
-            { WallId.CaveWall2,		              Color.FromArgb(195, 114, 3  ) },       //Color.FromArgb(68, 54, 35) },
-            { WallId.Cobblestone,		          Color.FromArgb(192, 127, 61 ) },        //Color.FromArgb(65, 59, 53) },
-            { WallId.ConiWall1,		              Color.FromArgb(131, 188, 19 ) },        //Color.FromArgb(52, 60, 36) },
-            { WallId.CrystalBlue,		          Color.FromArgb(46, 255, 199 ) },        //Color.FromArgb(103, 151, 138) },
-            { WallId.CrystalCyan,		          Color.FromArgb(0, 172, 255  ) },       //Color.FromArgb(71, 129, 157) },
-            { WallId.DecidiousWall,		          Color.FromArgb(172, 108, 25 ) },        //Color.FromArgb(45, 38, 29) },
-            { WallId.DecidiousWallBrown,	      Color.FromArgb(142, 174, 0  ) },       //Color.FromArgb(40, 47, 9) },
-            { WallId.DecidiousWallGreen,	      Color.FromArgb(148, 170, 0  ) },       //Color.FromArgb(38, 42, 10) },
-            { WallId.DecidiousWallRed,		      Color.FromArgb(174, 63, 0   ) },      //Color.FromArgb(46, 23, 10) },
-            { WallId.Dilapidated,		          Color.FromArgb(206, 101, 0  ) },       //Color.FromArgb(78, 54, 31) },
-            { WallId.DilapidatedShort,		      Color.FromArgb(194, 97, 0   ) },      //Color.FromArgb(67, 46, 25) },
-            { WallId.Dirt,		                  Color.FromArgb(203, 94, 0   ) },      //Color.FromArgb(75, 45, 19) },
-            { WallId.DungeonCobble,		          Color.FromArgb(227, 172, 98 ) },        //Color.FromArgb(100, 97, 93) },
-            { WallId.DungeonStone,		          Color.FromArgb(203, 136, 53 ) },        //Color.FromArgb(75, 67, 57) },
-            { WallId.DunMirCathedral,		      Color.FromArgb(255, 147, 12 ) },        //Color.FromArgb(163, 130, 89) },
-            { WallId.FieldStoneShort,		      Color.FromArgb(214, 163, 62 ) },        //Color.FromArgb(86, 80, 68) },
-            { WallId.GalavaTowerWall,		      Color.FromArgb(250, 152, 35 ) },        //Color.FromArgb(122, 102, 78) },
-            { WallId.GalavaTownWall,		      Color.FromArgb(246, 168, 21 ) },        //Color.FromArgb(118, 101, 69) },
-            { WallId.Hedge1,		              Color.FromArgb(150, 160, 0  ) },       //Color.FromArgb(30, 32, 0) },
-            { WallId.IceWall,		              Color.FromArgb(63, 173, 255 ) },        //Color.FromArgb(145, 173, 194) },
+            { WallId.AncientRuinShort,            Color.FromArgb(168, 194, 19 ) },        //Color.FromArgb(63, 67, 40) },
+            { WallId.AspenSparse,                 Color.FromArgb(255, 174, 0  ) },       //Color.FromArgb(138, 108, 44) },
+            { WallId.AspenTallWall,               Color.FromArgb(255, 162, 0  ) },       //Color.FromArgb(135, 109, 64) },
+            { WallId.AspenThick,                  Color.FromArgb(244, 160, 0  ) },       //Color.FromArgb(117, 86, 27) },
+            { WallId.BlackWall,                   Color.FromArgb(192, 96, 96  ) },       //Color.FromArgb(64, 64, 64) },
+            { WallId.BrickBlue,                   Color.FromArgb(195, 114, 86 ) },        //Color.FromArgb(68, 65, 64) },
+            { WallId.BrickCollegiate,             Color.FromArgb(219, 142, 52 ) },        //Color.FromArgb(91, 80, 67) },
+            { WallId.BrickFancy,                  Color.FromArgb(210, 149, 77 ) },        //Color.FromArgb(82, 77, 71) },
+            { WallId.BrickFancyBright,            Color.FromArgb(227, 115, 7  ) },       //Color.FromArgb(100, 76, 53) },
+            { WallId.BrickGray,                   Color.FromArgb(196, 152, 84 ) },        //Color.FromArgb(69, 67, 64) },
+            { WallId.BrickPlain,                  Color.FromArgb(216, 151, 76 ) },        //Color.FromArgb(88, 82, 75) },
+            { WallId.BrickRed,                    Color.FromArgb(178, 85, 0   ) },      //Color.FromArgb(50, 37, 25) },
+            { WallId.CathedralBlue,               Color.FromArgb(171, 85, 85  ) },       //Color.FromArgb(43, 43, 43) },
+            { WallId.CathedralBlue2,              Color.FromArgb(45, 96, 206  ) },       //Color.FromArgb(56, 63, 78) },
+            { WallId.CathedralBlueFace,           Color.FromArgb(168, 122, 76 ) },        //Color.FromArgb(41, 40, 39) },
+            { WallId.CathedralGreen,              Color.FromArgb(172, 154, 63 ) },        //Color.FromArgb(45, 44, 39) },
+            { WallId.CathedralGreen2,             Color.FromArgb(79, 208, 105 ) },        //Color.FromArgb(71, 81, 73) },
+            { WallId.CathedralRed,                Color.FromArgb(174, 101, 64 ) },        //Color.FromArgb(46, 42, 40) },
+            { WallId.CathedralRed2,               Color.FromArgb(214, 130, 40 ) },        //Color.FromArgb(86, 73, 59) },
+            { WallId.CathedralRedFace,            Color.FromArgb(168, 118, 68 ) },        //Color.FromArgb(41, 39, 37) },
+            { WallId.CaveWall,                    Color.FromArgb(227, 144, 16 ) },        //Color.FromArgb(100, 83, 57) },
+            { WallId.CaveWall2,                   Color.FromArgb(195, 114, 3  ) },       //Color.FromArgb(68, 54, 35) },
+            { WallId.Cobblestone,                 Color.FromArgb(192, 127, 61 ) },        //Color.FromArgb(65, 59, 53) },
+            { WallId.ConiWall1,                   Color.FromArgb(131, 188, 19 ) },        //Color.FromArgb(52, 60, 36) },
+            { WallId.CrystalBlue,                 Color.FromArgb(46, 255, 199 ) },        //Color.FromArgb(103, 151, 138) },
+            { WallId.CrystalCyan,                 Color.FromArgb(0, 172, 255  ) },       //Color.FromArgb(71, 129, 157) },
+            { WallId.DecidiousWall,               Color.FromArgb(172, 108, 25 ) },        //Color.FromArgb(45, 38, 29) },
+            { WallId.DecidiousWallBrown,          Color.FromArgb(142, 174, 0  ) },       //Color.FromArgb(40, 47, 9) },
+            { WallId.DecidiousWallGreen,          Color.FromArgb(148, 170, 0  ) },       //Color.FromArgb(38, 42, 10) },
+            { WallId.DecidiousWallRed,            Color.FromArgb(174, 63, 0   ) },      //Color.FromArgb(46, 23, 10) },
+            { WallId.Dilapidated,                 Color.FromArgb(206, 101, 0  ) },       //Color.FromArgb(78, 54, 31) },
+            { WallId.DilapidatedShort,            Color.FromArgb(194, 97, 0   ) },      //Color.FromArgb(67, 46, 25) },
+            { WallId.Dirt,                        Color.FromArgb(203, 94, 0   ) },      //Color.FromArgb(75, 45, 19) },
+            { WallId.DungeonCobble,               Color.FromArgb(227, 172, 98 ) },        //Color.FromArgb(100, 97, 93) },
+            { WallId.DungeonStone,                Color.FromArgb(203, 136, 53 ) },        //Color.FromArgb(75, 67, 57) },
+            { WallId.DunMirCathedral,             Color.FromArgb(255, 147, 12 ) },        //Color.FromArgb(163, 130, 89) },
+            { WallId.FieldStoneShort,             Color.FromArgb(214, 163, 62 ) },        //Color.FromArgb(86, 80, 68) },
+            { WallId.GalavaTowerWall,             Color.FromArgb(250, 152, 35 ) },        //Color.FromArgb(122, 102, 78) },
+            { WallId.GalavaTownWall,              Color.FromArgb(246, 168, 21 ) },        //Color.FromArgb(118, 101, 69) },
+            { WallId.Hedge1,                      Color.FromArgb(150, 160, 0  ) },       //Color.FromArgb(30, 32, 0) },
+            { WallId.IceWall,                     Color.FromArgb(63, 173, 255 ) },        //Color.FromArgb(145, 173, 194) },
             { WallId.InvisibleBlockingWallSet,    Color.FromArgb(230, 230, 230) },         //Color.FromArgb(230, 230, 230) },
-            { WallId.InvisibleStoneWallSet,		  Color.FromArgb(200, 200, 200) },         //Color.FromArgb(200, 200, 200) },
-            { WallId.InvisibleWallSet,		      Color.FromArgb(180, 180, 180) },         //Color.FromArgb(180, 180, 180) },
-            { WallId.IronFence,		              Color.FromArgb(162, 58, 58  ) },       //Color.FromArgb(35, 30, 30) },
-            { WallId.IronFenceDamaged,		      Color.FromArgb(160, 85, 60  ) },       //Color.FromArgb(32, 29, 28) },
-            { WallId.IxTempleWall,		          Color.FromArgb(248, 158, 76 ) },        //Color.FromArgb(120, 108, 97) },
-            { WallId.Log,		                  Color.FromArgb(226, 123, 6  ) },       //Color.FromArgb(99, 77, 52) },
-            { WallId.LOTDBrick,		              Color.FromArgb(192, 123, 54 ) },        //Color.FromArgb(64, 57, 50) },
-            { WallId.LOTDMagicOrnate,		      Color.FromArgb(0, 182, 255  ) },       //Color.FromArgb(108, 185, 216) },
-            { WallId.LOTDOrnate,		          Color.FromArgb(184, 121, 49 ) },        //Color.FromArgb(56, 50, 43) },
-            { WallId.MagicWall,		              Color.FromArgb(51, 73, 255  ) },       //Color.FromArgb(134, 140, 191) },
-            { WallId.MagicWallSystemUseOnly,	  Color.FromArgb(0, 180, 255  ) },       //Color.FromArgb(94, 180, 216) },
-            { WallId.ManaMineWall,		          Color.FromArgb(230, 97, 0   ) },      //Color.FromArgb(102, 72, 50) },
-            { WallId.OgreCage,		              Color.FromArgb(200, 133, 4  ) },       //Color.FromArgb(73, 61, 38) },
-            { WallId.OgreWall,		              Color.FromArgb(202, 122, 19 ) },        //Color.FromArgb(74, 61, 44) },
-            { WallId.Rock,		                  Color.FromArgb(200, 148, 65 ) },        //Color.FromArgb(73, 68, 60) },
-            { WallId.RockDark,		              Color.FromArgb(166, 122, 49 ) },        //Color.FromArgb(39, 36, 31) },
-            { WallId.RootDark,		              Color.FromArgb(163, 115, 0  ) },       //Color.FromArgb(36, 26, 2) },
-            { WallId.RootLight,		              Color.FromArgb(178, 138, 18 ) },        //Color.FromArgb(50, 45, 30) },
-            { WallId.SewerWall,		              Color.FromArgb(202, 177, 22 ) },        //Color.FromArgb(74, 70, 45) },
-            { WallId.Shard,		                  Color.FromArgb(204, 140, 52 ) },        //Color.FromArgb(77, 69, 58) },
-            { WallId.Shrub,		                  Color.FromArgb(164, 116, 0  ) },       //Color.FromArgb(37, 26, 0) },
-            { WallId.StoneBlue,		              Color.FromArgb(211, 154, 83 ) },        //Color.FromArgb(84, 80, 75) },
-            { WallId.StoneGray,		              Color.FromArgb(192, 138, 61 ) },        //Color.FromArgb(65, 60, 53) },
-            { WallId.StuccoDarkWood,		      Color.FromArgb(243, 140, 31 ) },        //Color.FromArgb(116, 95, 73) },
-            { WallId.StuccoLightWood,		      Color.FromArgb(254, 120, 16 ) },        //Color.FromArgb(126, 95, 71) },
-            { WallId.StuccoLightWoodDamaged,	  Color.FromArgb(248, 114, 5  ) },       //Color.FromArgb(121, 89, 63) },
-            { WallId.Thorn,		                  Color.FromArgb(166, 67, 0   ) },      //Color.FromArgb(38, 22, 11) },
-            { WallId.Tree,		                  Color.FromArgb(210, 101, 0  ) },       //Color.FromArgb(82, 55, 30) },
-            { WallId.TristoneBlue,		          Color.FromArgb(75, 121, 168 ) },        //Color.FromArgb(38, 39, 40) },
-            { WallId.TristoneGreen,		          Color.FromArgb(182, 128, 61 ) },        //Color.FromArgb(54, 50, 45) },
+            { WallId.InvisibleStoneWallSet,       Color.FromArgb(200, 200, 200) },         //Color.FromArgb(200, 200, 200) },
+            { WallId.InvisibleWallSet,            Color.FromArgb(180, 180, 180) },         //Color.FromArgb(180, 180, 180) },
+            { WallId.IronFence,                   Color.FromArgb(162, 58, 58  ) },       //Color.FromArgb(35, 30, 30) },
+            { WallId.IronFenceDamaged,            Color.FromArgb(160, 85, 60  ) },       //Color.FromArgb(32, 29, 28) },
+            { WallId.IxTempleWall,                Color.FromArgb(248, 158, 76 ) },        //Color.FromArgb(120, 108, 97) },
+            { WallId.Log,                         Color.FromArgb(226, 123, 6  ) },       //Color.FromArgb(99, 77, 52) },
+            { WallId.LOTDBrick,                   Color.FromArgb(192, 123, 54 ) },        //Color.FromArgb(64, 57, 50) },
+            { WallId.LOTDMagicOrnate,             Color.FromArgb(0, 182, 255  ) },       //Color.FromArgb(108, 185, 216) },
+            { WallId.LOTDOrnate,                  Color.FromArgb(184, 121, 49 ) },        //Color.FromArgb(56, 50, 43) },
+            { WallId.MagicWall,                   Color.FromArgb(51, 73, 255  ) },       //Color.FromArgb(134, 140, 191) },
+            { WallId.MagicWallSystemUseOnly,      Color.FromArgb(0, 180, 255  ) },       //Color.FromArgb(94, 180, 216) },
+            { WallId.ManaMineWall,                Color.FromArgb(230, 97, 0   ) },      //Color.FromArgb(102, 72, 50) },
+            { WallId.OgreCage,                    Color.FromArgb(200, 133, 4  ) },       //Color.FromArgb(73, 61, 38) },
+            { WallId.OgreWall,                    Color.FromArgb(202, 122, 19 ) },        //Color.FromArgb(74, 61, 44) },
+            { WallId.Rock,                        Color.FromArgb(200, 148, 65 ) },        //Color.FromArgb(73, 68, 60) },
+            { WallId.RockDark,                    Color.FromArgb(166, 122, 49 ) },        //Color.FromArgb(39, 36, 31) },
+            { WallId.RootDark,                    Color.FromArgb(163, 115, 0  ) },       //Color.FromArgb(36, 26, 2) },
+            { WallId.RootLight,                   Color.FromArgb(178, 138, 18 ) },        //Color.FromArgb(50, 45, 30) },
+            { WallId.SewerWall,                   Color.FromArgb(202, 177, 22 ) },        //Color.FromArgb(74, 70, 45) },
+            { WallId.Shard,                       Color.FromArgb(204, 140, 52 ) },        //Color.FromArgb(77, 69, 58) },
+            { WallId.Shrub,                       Color.FromArgb(164, 116, 0  ) },       //Color.FromArgb(37, 26, 0) },
+            { WallId.StoneBlue,                   Color.FromArgb(211, 154, 83 ) },        //Color.FromArgb(84, 80, 75) },
+            { WallId.StoneGray,                   Color.FromArgb(192, 138, 61 ) },        //Color.FromArgb(65, 60, 53) },
+            { WallId.StuccoDarkWood,              Color.FromArgb(243, 140, 31 ) },        //Color.FromArgb(116, 95, 73) },
+            { WallId.StuccoLightWood,             Color.FromArgb(254, 120, 16 ) },        //Color.FromArgb(126, 95, 71) },
+            { WallId.StuccoLightWoodDamaged,      Color.FromArgb(248, 114, 5  ) },       //Color.FromArgb(121, 89, 63) },
+            { WallId.Thorn,                       Color.FromArgb(166, 67, 0   ) },      //Color.FromArgb(38, 22, 11) },
+            { WallId.Tree,                        Color.FromArgb(210, 101, 0  ) },       //Color.FromArgb(82, 55, 30) },
+            { WallId.TristoneBlue,                Color.FromArgb(75, 121, 168 ) },        //Color.FromArgb(38, 39, 40) },
+            { WallId.TristoneGreen,               Color.FromArgb(182, 128, 61 ) },        //Color.FromArgb(54, 50, 45) },
             { WallId.Volcano,                     Color.FromArgb(188, 44, 0   ) },      //Color.FromArgb(61, 35, 27) },
         };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        public static void GetColorsAndLocations(
+               Bitmap bitmap, out List<Color> colors, out List<Point> locations, out Point pointMin,
+               out Point pointMax)
+        {
+            var points = new List<Point>();
+            colors = new List<Color>();
+            var size = bitmap.Size;
+            for (int i = 0; i < size.Width; ++i)
+            {
+                for (int j = 0; j < size.Height; ++j)
+                {
+                    points.Add(new Point(i, j));
+                    colors.Add(bitmap.GetPixel(i, j));
+                }
+            }
+
+            locations = new List<Point>();
+            foreach (var point in points)
+            {
+                Point location = new Point
+                {
+                    X = point.X + point.Y - PointCount / 2,
+                    Y = -point.X + point.Y + PointCount / 2
+                };
+                locations.Add(location);
+            }
+
+            pointMin = new Point(int.MaxValue, int.MaxValue);
+            pointMax = new Point(int.MinValue, int.MinValue);
+            foreach (var location in locations)
+            {
+                if (location.X < pointMin.X)
+                    pointMin.X = location.X;
+                if (location.Y < pointMin.Y)
+                    pointMin.Y = location.Y;
+                if (location.X > pointMax.X)
+                    pointMax.X = location.X;
+                if (location.Y > pointMax.Y)
+                    pointMax.Y = location.Y;
+            }
+        }
+
+        private static Dictionary<Color, WallId> MakeWallColorMap()
+        {
+            var wallColorMap = new Dictionary<Color, WallId>();
+            foreach (var item in WallColors)
+            {
+                wallColorMap[item.Value] = item.Key;
+            }
+            return wallColorMap;
+        }
+
+        public static WallId[,] MakeWallId2dMap(Bitmap bitmap)
+        {
+            var wallColorMap = MakeWallColorMap();
+
+            GetColorsAndLocations(
+                bitmap, out List<Color> colors, out List<Point> locations, out Point pointMin,
+                out Point pointMax);
+
+            WallId[,] typeMap
+                = new WallId[pointMax.X - pointMin.X + 1, pointMax.Y - pointMin.Y + 1];
+
+            for (int i = 0; i < typeMap.GetLength(0); ++i)
+            {
+                for (int j = 0; j < typeMap.GetLength(1); ++j)
+                {
+                    typeMap[i, j] = WallId.Invalid;
+                }
+            }
+
+            for (int i = 0; i < locations.Count; ++i)
+            {
+                var color = colors[i];
+                if (!wallColorMap.ContainsKey(color))
+                    continue;
+
+                WallId wallId = wallColorMap[color];
+                var location = locations[i];
+                typeMap[location.X - pointMin.X, location.Y - pointMin.Y] = wallId;
+            }
+
+            return typeMap;
+        }
+
+        public static TileId[,] MakeTileMap(MapView.TimeTile[,] tile2dMap)
+        {
+            TileId[,] types = new TileId[tile2dMap.GetLength(0), tile2dMap.GetLength(1)];
+
+            for (int i = 0; i < tile2dMap.GetLength(0); ++i)
+            {
+                for (int j = 0; j < tile2dMap.GetLength(1); ++j)
+                {
+                    var timeTile = tile2dMap[i, j];
+                    if (timeTile == null)
+                        types[i, j] = TileId.Invalid;
+                    else
+                        types[i, j] = timeTile.Tile.graphicId;
+                }
+            }
+
+            return types;
+        }
 
     }
+
+
+   
 }

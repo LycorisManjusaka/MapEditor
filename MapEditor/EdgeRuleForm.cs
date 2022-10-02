@@ -13,36 +13,54 @@ namespace MapEditor
     {
         private Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules 
             = new Dictionary<TileId, Dictionary<TileId, EdgeId>>();
+
+        private Dictionary<TileId, WallId> wallRules = new Dictionary<TileId, WallId>();
+
         private bool isChanging = false;
 
-        public Dictionary<TileId, Dictionary<TileId, EdgeId>> Rules
+        public Dictionary<TileId, Dictionary<TileId, EdgeId>> EdgeRules
         {
             get { return edgeRules; }
             set
             {
                 edgeRules = value;
-                RulesToText();
+                EdgeRulesToText();
             }
         }
 
-        private void RulesToText()
+        public Dictionary<TileId, WallId> WallRules
+        {
+            get { return wallRules; }
+            set
+            {
+                wallRules = value;
+                EdgeRulesToText();
+            }
+        }
+
+        private void EdgeRulesToText()
         {
             isChanging = true;
-            var lines = Analizer.RulesToLines(edgeRules);
-            tbText.Lines = lines.ToArray();
+            var lines = EdgeAnalizer.RulesToLines(edgeRules);
+            tbEdgeText.Lines = lines.ToArray();
             isChanging = false;
         }
 
-        public bool RuleMakingMode => chbRuleMakingMode.Checked;
+        public bool EdgeMakingMode => chbEdgeRuleMakingMode.Checked;
         private string RulesDir => Path.GetDirectoryName(Application.ExecutablePath) + "\\Rules";
         public EdgeRuleForm()
         {
             InitializeComponent();
 
-            ReloadFiles();
-            cmbPattern.SelectedIndex = cmbPattern.Items.IndexOf("Common");
-            tbText_TextChanged(this, new EventArgs());
+            ReloadEdgeFiles();
+            ReloadWallFiles();
+            cmbEdgePattern.SelectedIndex = cmbEdgePattern.Items.IndexOf("Common");
+            cmbWallPattern.SelectedIndex = cmbWallPattern.Items.IndexOf("Common");
+            tbEdgeText_TextChanged(this, new EventArgs());
+            tbWallText_TextChanged(this, new EventArgs());
         }
+
+
 
         private void EdgeRuleForm_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -50,9 +68,9 @@ namespace MapEditor
             Hide();
         }
 
-        private void ReloadFiles()
+        private void ReloadEdgeFiles()
         {
-            cmbPattern.Items.Clear();
+            cmbEdgePattern.Items.Clear();
             var dir = Path.GetDirectoryName(Application.ExecutablePath)  + "\\Rules";
             var files = Directory.GetFiles(dir);
             foreach(var file in files)
@@ -60,7 +78,21 @@ namespace MapEditor
                 var ext = Path.GetExtension(file);
                 if (ext != ".rul")
                     continue;
-                cmbPattern.Items.Add(Path.GetFileNameWithoutExtension(file));
+                cmbEdgePattern.Items.Add(Path.GetFileNameWithoutExtension(file));
+            }
+        }
+
+        private void ReloadWallFiles()
+        {
+            cmbWallPattern.Items.Clear();
+            var dir = Path.GetDirectoryName(Application.ExecutablePath) + "\\Rules";
+            var files = Directory.GetFiles(dir);
+            foreach (var file in files)
+            {
+                var ext = Path.GetExtension(file);
+                if (ext != ".wrul")
+                    continue;
+                cmbWallPattern.Items.Add(Path.GetFileNameWithoutExtension(file));
             }
         }
 
@@ -72,26 +104,32 @@ namespace MapEditor
         private void cmbPattern_SelectedIndexChanged(object sender, EventArgs e)
         {
             var path = RulesDir 
-                + "\\" + cmbPattern.Items[cmbPattern.SelectedIndex].ToString() + ".rul";
-            tbText.Lines = File.ReadAllLines(path);
+                + "\\" + cmbEdgePattern.Items[cmbEdgePattern.SelectedIndex].ToString() + ".rul";
+            tbEdgeText.Lines = File.ReadAllLines(path);
         }
 
+        private void cmbWallPattern_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            var path = RulesDir
+                + "\\" + cmbWallPattern.Items[cmbWallPattern.SelectedIndex].ToString() + ".wrul";
+            tbWallText.Lines = File.ReadAllLines(path);
+        }
 
-        private void tbText_TextChanged(object sender, EventArgs e)
+        private void tbEdgeText_TextChanged(object sender, EventArgs e)
         {
             if (isChanging)
                 return;
             isChanging = true;
             edgeRules.Clear();
 
-            SendMessage(tbText.Handle, WM_SETREDRAW, false, 0);
+            SendMessage(tbEdgeText.Handle, WM_SETREDRAW, false, 0);
 
-            int selectionStartBuff = tbText.SelectionStart;
-            int selectionLengthBuff = tbText.SelectionLength;
+            int selectionStartBuff = tbEdgeText.SelectionStart;
+            int selectionLengthBuff = tbEdgeText.SelectionLength;
 
             //tbText.Hide();
 
-            var lines = tbText.Lines;
+            var lines = tbEdgeText.Lines;
             int index = 0;
             foreach (var line in lines)
             {
@@ -115,43 +153,104 @@ namespace MapEditor
                 }
 
 
-                int position = tbText.GetFirstCharIndexFromLine(index);
+                int position = tbEdgeText.GetFirstCharIndexFromLine(index);
                 if (position < 0)
                 {
                     // lineNumber is too big
-                    tbText.Select(tbText.Text.Length, 0);
+                    tbEdgeText.Select(tbEdgeText.Text.Length, 0);
                 }
                 else
                 {
-                    int lineEnd = tbText.Text.IndexOf("\n", position);
+                    int lineEnd = tbEdgeText.Text.IndexOf("\n", position);
                     if (lineEnd < 0)
                     {
-                        lineEnd = tbText.Text.Length;
+                        lineEnd = tbEdgeText.Text.Length;
                     }
 
-                    tbText.Select(position, lineEnd - position);
+                    tbEdgeText.Select(position, lineEnd - position);
                 }
-                tbText.SelectionColor 
+                tbEdgeText.SelectionColor 
                     = Color.FromKnownColor(ok ? KnownColor.Black : KnownColor.Red);
 
                 ++index;
             }
 
            // tbText.Show();
-
-            tbText.SelectionStart = selectionStartBuff;
-            tbText.SelectionLength = selectionLengthBuff;
+            tbEdgeText.SelectionStart = selectionStartBuff;
+            tbEdgeText.SelectionLength = selectionLengthBuff;
 
             // Do your thingies here
-            SendMessage(tbText.Handle, WM_SETREDRAW, true, 0);
+            SendMessage(tbEdgeText.Handle, WM_SETREDRAW, true, 0);
 
             Refresh();
             isChanging = false;
         }
 
-        [DllImport("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, Int32 wMsg, bool wParam, Int32 lParam);
-        private const int WM_SETREDRAW = 11;
+        private void tbWallText_TextChanged(object sender, EventArgs e)
+        {
+            if (isChanging)
+                return;
+            isChanging = true;
+            wallRules.Clear();
+
+            SendMessage(tbWallText.Handle, WM_SETREDRAW, false, 0);
+
+            int selectionStartBuff = tbWallText.SelectionStart;
+            int selectionLengthBuff = tbWallText.SelectionLength;
+
+            //tbText.Hide();
+
+            var lines = tbWallText.Lines;
+            int index = 0;
+            foreach (var line in lines)
+            {
+                var words = line.Split(new char[] { '\t', ' ' });
+                bool ok = true;
+                try
+                {
+                    var tileId = (TileId)Enum.Parse(typeof(TileId), words[0]);
+                    var wallId = (WallId)Enum.Parse(typeof(WallId), words[1]);
+                    wallRules[tileId] = wallId;
+                }
+                catch (Exception)
+                {
+                    ok = false;
+                }
+
+
+                int position = tbWallText.GetFirstCharIndexFromLine(index);
+                if (position < 0)
+                {
+                    // lineNumber is too big
+                    tbWallText.Select(tbWallText.Text.Length, 0);
+                }
+                else
+                {
+                    int lineEnd = tbWallText.Text.IndexOf("\n", position);
+                    if (lineEnd < 0)
+                    {
+                        lineEnd = tbWallText.Text.Length;
+                    }
+
+                    tbWallText.Select(position, lineEnd - position);
+                }
+                tbWallText.SelectionColor
+                    = Color.FromKnownColor(ok ? KnownColor.Black : KnownColor.Red);
+
+                ++index;
+            }
+
+            // tbText.Show();
+
+            tbWallText.SelectionStart = selectionStartBuff;
+            tbWallText.SelectionLength = selectionLengthBuff;
+
+            // Do your thingies here
+            SendMessage(tbWallText.Handle, WM_SETREDRAW, true, 0);
+
+            Refresh();
+            isChanging = false;
+        }
 
         private void bSaveAs_Click(object sender, EventArgs e)
         {
@@ -163,12 +262,43 @@ namespace MapEditor
             };
             if (dialog.ShowDialog() == DialogResult.OK)
             {
-                Analizer.RulesToFile(edgeRules, dialog.FileName);
-                ReloadFiles();
-                cmbPattern.SelectedIndex 
-                    = cmbPattern.Items.IndexOf(Path.GetFileNameWithoutExtension(dialog.FileName));
-                tbText_TextChanged(this, new EventArgs());
+                EdgeAnalizer.RulesToFile(edgeRules, dialog.FileName);
+                ReloadEdgeFiles();
+
+                cmbEdgePattern.SelectedIndex 
+                    = cmbEdgePattern.Items
+                    .IndexOf(Path.GetFileNameWithoutExtension(dialog.FileName));
+
+                tbEdgeText_TextChanged(this, new EventArgs());
             }
         }
+
+        private void bWallSaveAs_Click(object sender, EventArgs e)
+        {
+            var dialog = new SaveFileDialog
+            {
+                Filter = "Wall rules (*.wrul)|*.wrul",
+                FilterIndex = 0,
+                InitialDirectory = RulesDir
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
+            {
+                WallAnalizer.RulesToFile(wallRules, dialog.FileName);
+                ReloadWallFiles();
+
+                cmbWallPattern.SelectedIndex
+                    = cmbWallPattern.Items
+                    .IndexOf(Path.GetFileNameWithoutExtension(dialog.FileName));
+
+                tbWallText_TextChanged(this, new EventArgs());
+            }
+        }
+
+
+
+        [DllImport("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int wMsg, bool wParam, int lParam);
+        private const int WM_SETREDRAW = 11;
+
     }
 }

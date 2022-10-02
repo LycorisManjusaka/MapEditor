@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.Windows.Forms;
 using NoxShared;
-//using TileEdgeDirection = NoxShared.EdgeTile.Direction;
 using Mode = MapEditor.MapInt.EditMode;
 using MapEditor.render;
 using MapEditor.newgui;
@@ -13,10 +12,9 @@ using System.Collections.Generic;
 using System.Collections;
 using MapEditor.mapgen;
 using System.Linq;
-using System.Drawing.Imaging;
 using MapEditor.BitmapExport;
-using System.IO;
 using static NoxShared.Map.Tile;
+using System.IO;
 
 namespace MapEditor
 {
@@ -160,8 +158,8 @@ namespace MapEditor
 
             SelectObjectBtn.Checked = true;
 
-            tbMapCopy.SelectedIndex = 1;
-            tcCopyBitmap.SelectedIndex = 1;
+            tbMapCopy.SelectedIndex = 0;
+            tcCopyBitmap.SelectedIndex = 0;
         }
 
         private void mapPanel_MouseDown(object sender, MouseEventArgs e)
@@ -2968,7 +2966,7 @@ namespace MapEditor
 
             copyAreaMode = cmdCopyArea.Checked;
         }
-        private void cmdCopyAll_Click(object sender, EventArgs e)
+        public void cmdCopyAll_Click(object sender, EventArgs e)
         {
             var wholeMap = new Point[] {
                 new Point(0, 0), new Point(0, mapPanel.Height),
@@ -2977,7 +2975,7 @@ namespace MapEditor
 
             CopyArea(wholeMap);
         }
-        private void cmdPasteArea_CheckedChanged(object sender, EventArgs e)
+        public void cmdPasteArea_CheckedChanged(object sender, EventArgs e)
         {
             MapRenderer.FakeWalls.Clear();
             MapRenderer.FakeTiles.Clear();
@@ -2990,8 +2988,15 @@ namespace MapEditor
                 {
                     if (tcCopyBitmap.SelectedIndex == 0)
                     {
-                        var importer = new BitmapEdgeImporter(
-                            (Bitmap)Clipboard.GetImage(), edgeRuleForm.Rules);
+                        BitmapTileImporter importer;
+                        if (cbWallsWithTiles.Checked)                   
+                            importer = new BitmapTileImporter(
+                                   (Bitmap)Clipboard.GetImage(), edgeRuleForm.EdgeRules,
+                                   edgeRuleForm.WallRules);                        
+                        else               
+                            importer = new BitmapTileImporter(
+                                (Bitmap)Clipboard.GetImage(), edgeRuleForm.EdgeRules);
+                        
                         CopiedArea = importer.ToTiles();
                     } 
                     else if (tcCopyBitmap.SelectedIndex == 1)
@@ -3035,6 +3040,9 @@ namespace MapEditor
                 CopyAreaToData(poly, polyIndex);
             else
                 CopyAreaToBitmap(poly, polyIndex);
+
+            new WallAnalizer(CopiedArea).WallRuleStatisticsToFile("E:\\Dev\\Nox\\Rules\\"
+                + Path.GetFileNameWithoutExtension(Map.FileName) + ".wst");
         }
 
 
@@ -3070,9 +3078,9 @@ namespace MapEditor
 
                 StoreTiles(poly);
 
-                if (edgeRuleForm.RuleMakingMode)
+                if (edgeRuleForm.EdgeMakingMode)
                 {
-                    edgeRuleForm.Rules = new Analizer(CopiedArea).GetRules();
+                    edgeRuleForm.EdgeRules = new EdgeAnalizer(CopiedArea).GetRules();
                 }
 
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromTiles());
@@ -3080,6 +3088,7 @@ namespace MapEditor
             else if (tcCopyBitmap.SelectedIndex == 1)
             {
                 StoreWalls(poly);
+                StoreTiles(poly);
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromWalls());
             }
 
@@ -3744,6 +3753,7 @@ namespace MapEditor
             this.tpTiles = new System.Windows.Forms.TabPage();
             this.cbWallsWithTiles = new System.Windows.Forms.CheckBox();
             this.bthEdgeRules = new System.Windows.Forms.Button();
+            this.tpWalls = new System.Windows.Forms.TabPage();
             this.cmdPasteArea = new System.Windows.Forms.CheckBox();
             this.cmdCopyAll = new System.Windows.Forms.Button();
             this.cmdCopyArea = new System.Windows.Forms.CheckBox();
@@ -3764,7 +3774,6 @@ namespace MapEditor
             this.contextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tmrFade = new System.Windows.Forms.Timer(this.components);
             this.tmrFadeTicker = new System.Windows.Forms.Timer(this.components);
-            this.tpWalls = new System.Windows.Forms.TabPage();
             ((System.ComponentModel.ISupportInitialize)(this.statusMode)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusLocation)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.statusMapItem)).BeginInit();
@@ -4632,7 +4641,8 @@ namespace MapEditor
             // cbWallsWithTiles
             // 
             this.cbWallsWithTiles.AutoSize = true;
-            this.cbWallsWithTiles.Enabled = false;
+            this.cbWallsWithTiles.Checked = true;
+            this.cbWallsWithTiles.CheckState = System.Windows.Forms.CheckState.Checked;
             this.cbWallsWithTiles.Location = new System.Drawing.Point(9, 10);
             this.cbWallsWithTiles.Name = "cbWallsWithTiles";
             this.cbWallsWithTiles.Size = new System.Drawing.Size(52, 17);
@@ -4650,6 +4660,15 @@ namespace MapEditor
             this.bthEdgeRules.Text = "Rules...";
             this.bthEdgeRules.UseVisualStyleBackColor = true;
             this.bthEdgeRules.Click += new System.EventHandler(this.bthEdgeRules_Click);
+            // 
+            // tpWalls
+            // 
+            this.tpWalls.Location = new System.Drawing.Point(4, 22);
+            this.tpWalls.Name = "tpWalls";
+            this.tpWalls.Size = new System.Drawing.Size(172, 35);
+            this.tpWalls.TabIndex = 1;
+            this.tpWalls.Text = "Walls";
+            this.tpWalls.UseVisualStyleBackColor = true;
             // 
             // cmdPasteArea
             // 
@@ -4826,15 +4845,6 @@ namespace MapEditor
             // 
             this.tmrFadeTicker.Interval = 75;
             this.tmrFadeTicker.Tick += new System.EventHandler(this.tmrFadeTicker_Tick);
-            // 
-            // tpWalls
-            // 
-            this.tpWalls.Location = new System.Drawing.Point(4, 22);
-            this.tpWalls.Name = "tpWalls";
-            this.tpWalls.Size = new System.Drawing.Size(172, 35);
-            this.tpWalls.TabIndex = 1;
-            this.tpWalls.Text = "Walls";
-            this.tpWalls.UseVisualStyleBackColor = true;
             // 
             // MapView
             // 

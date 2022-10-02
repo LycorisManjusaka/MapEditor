@@ -1,24 +1,21 @@
-﻿using NoxShared;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using static MapEditor.BitmapExport.BitmapEdgeImporter;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
 using static MapEditor.BitmapExport.BitmapCommon;
 
 namespace MapEditor.BitmapExport
 {
-    public class Analizer
+    public class EdgeAnalizer
     {
-        private MapView.TimeContent copiedArea;
+        private readonly MapView.TimeContent copiedArea;
         private List<string> resultLines;
         private MapView.TimeTile[,] tile2dMap;
 
-        public Analizer(MapView.TimeContent copiedArea)
+        public EdgeAnalizer(MapView.TimeContent copiedArea)
         {
             this.copiedArea = copiedArea;
         }

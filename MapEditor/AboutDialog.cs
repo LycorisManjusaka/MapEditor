@@ -68,14 +68,16 @@ namespace MapEditor
             this.lblAbout.Name = "lblAbout";
             this.lblAbout.Size = new System.Drawing.Size(241, 142);
             this.lblAbout.TabIndex = 2;
-            this.lblAbout.Text = "Eric Litak\r\nAndrew Wesie\r\nTemplar\r\nJoshua Statzer\r\nAngryKirC\r\nSuperJack\r\nProtokol" +
-    "\r\nKITTY";
+            this.lblAbout.Text = "Lycoris\r\nPogonomic\r\nEric Litak\r\nAndrew Wesie\r\nTemplar\r\nJoshua Statzer\r\nAngryKirC\r" +
+    "\nSuperJack\r\nProtokol\r\nKITTY";
             this.lblAbout.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // picBox
             // 
+            this.picBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.picBox.Image = global::MapEditor.Properties.Resources.aboutPic;
-            this.picBox.Location = new System.Drawing.Point(12, 190);
+            this.picBox.Location = new System.Drawing.Point(12, 205);
             this.picBox.Name = "picBox";
             this.picBox.Size = new System.Drawing.Size(280, 216);
             this.picBox.TabIndex = 3;
@@ -84,7 +86,7 @@ namespace MapEditor
             // AboutDialog
             // 
             this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-            this.ClientSize = new System.Drawing.Size(306, 414);
+            this.ClientSize = new System.Drawing.Size(306, 433);
             this.Controls.Add(this.picBox);
             this.Controls.Add(this.lblAbout);
             this.Controls.Add(this.lblVersion);

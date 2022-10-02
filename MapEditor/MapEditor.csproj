@@ -132,12 +132,13 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="BitmapExport\Analizer.cs" />
+    <Compile Include="BitmapExport\WallAnalizer.cs" />
+    <Compile Include="BitmapExport\EdgeAnalizer.cs" />
     <Compile Include="BitmapExport\BitmapCommon.cs" />
     <Compile Include="BitmapExport\BitmapImporter.cs" />
     <Compile Include="BitmapExport\BitmapWallImporter.cs" />
     <Compile Include="BitmapExport\BitmapExporter.cs" />
-    <Compile Include="BitmapExport\BitmapEdgeImporter.cs" />
+    <Compile Include="BitmapExport\BitmapTileImporter.cs" />
     <Compile Include="EdgeRuleForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -17,15 +17,14 @@ namespace MapEditor.BitmapExport
         public BitmapWallImporter(Bitmap bitmap)
             : base(bitmap)
         {
-            foreach(var item in WallColors)
-            {  
-                wallColorMap[item.Value] = item.Key;
-            }
+            
         }
+
+
 
         public MapView.TimeContent ToWalls()
         {
-            MakeWallId2dMap();
+            typeMap = MakeWallId2dMap(bitmap);
             return MakeResultWalls();
         }
 
@@ -158,34 +157,6 @@ namespace MapEditor.BitmapExport
             return Map.Wall.WallFacing.CROSS;
         }
 
-        private void MakeWallId2dMap()
-        {
-            GetColorsAndLocations(
-                out List<Color> colors, out List<Point> locations, out Point pointMin,
-                out Point pointMax);
-
-            typeMap
-                = new WallId[pointMax.X - pointMin.X + 1, pointMax.Y - pointMin.Y + 1];
-
-            for (int i = 0; i < typeMap.GetLength(0); ++i)
-            {
-                for (int j = 0; j < typeMap.GetLength(1); ++j)
-                {
-                    typeMap[i, j] = WallId.Invalid;
-                }
-            }
-
-            for (int i = 0; i < locations.Count; ++i)
-            {
-                var color = colors[i];
-                if (!wallColorMap.ContainsKey(color))
-                    continue;
-
-                WallId wallId = wallColorMap[color];
-                var location = locations[i];
-                typeMap[location.X - pointMin.X, location.Y - pointMin.Y] = wallId;
-            }
-        }
 
         private WallId Id(int i, int j)
         {

@@ -5,23 +5,26 @@ using System.Linq;
 using static NoxShared.Map.Tile;
 using static NoxShared.ThingDb;
 using static MapEditor.BitmapExport.BitmapCommon;
+using System;
+using static NoxShared.Map.Wall;
 
 namespace MapEditor.BitmapExport
 {
-    public class BitmapEdgeImporter : BitmapImporter
+    public class BitmapTileImporter : BitmapImporter
     {
-        private readonly Dictionary<uint, TileId> tileColorMap = new Dictionary<uint, TileId>();       
-
-        private readonly Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules 
-            = new Dictionary<TileId, Dictionary<TileId, EdgeId>>();
-
+        private static readonly Dictionary<uint, TileId> tileColorMap
+            = new Dictionary<uint, TileId>();       
+        private readonly Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules = null;
+        private readonly Dictionary<TileId, WallId> wallRules = null;
         private HashSet<TileId> usedTileIds;
-        private TileId[,] typeMap;
+        private TileId[,] tileIdMap;
         private MapView.TimeTile[,] tile2dMap;
+        private MapView.TimeContent res = new MapView.TimeContent();
+        private Random rnd = new Random((int)DateTime.Now.Ticks);
 
-
-        public BitmapEdgeImporter(
-            Bitmap bitmap, Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules) 
+        public BitmapTileImporter(
+            Bitmap bitmap, Dictionary<TileId, Dictionary<TileId, EdgeId>> edgeRules, 
+            Dictionary<TileId, WallId> wallRules = null) 
             : base(bitmap)
         {
             for (int i = 0; i < Map.tilecolors.Count(); ++i)
@@ -30,24 +33,173 @@ namespace MapEditor.BitmapExport
             }
             
             this.edgeRules = edgeRules;
+            this.wallRules = wallRules;
         }
 
         public MapView.TimeContent ToTiles()
         {
-            MakeTile2dMap();
+            tile2dMap = MakeTile2dMap(bitmap);
+            tileIdMap = MakeTileMap(tile2dMap);
             AddEdges();
-            return MakeResultTiles();
+
+            MakeResultTiles();
+
+            if (wallRules != null)
+                AddWalls();
+
+            res.Location = res.StoredTiles[0].Tile.Location;
+            res.Mode = MapInt.EditMode.WALL_PLACE;
+            return res;
         }
 
-        private void MakeTile2dMap()
+        private void AddWalls()
+        {
+            for (int i = 0; i < tile2dMap.GetLength(0); ++i)
+            {
+                for (int j = 0; j < tile2dMap.GetLength(1); ++j)
+                {
+                    AddWallsToTile(i, j);
+                }
+            }
+        }
+
+
+        private void AddWallsToTile(int i, int j)
+        {
+            var tileId = Id(i, j);
+
+            if (tileId == TileId.Invalid || !wallRules.ContainsKey(tileId))
+                return;
+
+            if (SideId(i, j, BaseDir.West) == TileId.Invalid
+                && SideId(i, j, BaseDir.North) != TileId.Invalid
+                && SideId(i, j, BaseDir.NW) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.WEST, BaseDir.West);
+            
+            if (SideId(i, j, BaseDir.West) == TileId.Invalid
+                && SideId(i, j, BaseDir.North) != TileId.Invalid
+                && SideId(i, j, BaseDir.NW) != TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NE_CORNER, BaseDir.West);
+            
+            if (SideId(i, j, BaseDir.West) == TileId.Invalid
+                && SideId(i, j, BaseDir.North) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NW_CORNER, BaseDir.West);
+            
+            if (SideId(i, j, BaseDir.North) == TileId.Invalid
+                && SideId(i, j, BaseDir.East) != TileId.Invalid
+                && SideId(i, j, BaseDir.NE) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NORTH);
+            
+            if (SideId(i, j, BaseDir.North) == TileId.Invalid
+                && SideId(i, j, BaseDir.East) != TileId.Invalid
+                && SideId(i, j, BaseDir.NE) != TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.SE_CORNER);
+            
+            if (SideId(i, j, BaseDir.North) == TileId.Invalid
+                && SideId(i, j, BaseDir.East) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NE_CORNER);
+            
+            if (SideId(i, j, BaseDir.East) == TileId.Invalid
+                && SideId(i, j, BaseDir.North) != TileId.Invalid
+                && SideId(i, j, BaseDir.NE) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.WEST);
+            
+            if (SideId(i, j, BaseDir.East) == TileId.Invalid
+                && SideId(i, j, BaseDir.North) != TileId.Invalid
+                && SideId(i, j, BaseDir.NE) != TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NW_CORNER);
+            
+            if (SideId(i, j, BaseDir.South) == TileId.Invalid
+                && SideId(i, j, BaseDir.West) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.SW_CORNER, BaseDir.SW);
+            
+            if (SideId(i, j, BaseDir.South) == TileId.Invalid
+                && SideId(i, j, BaseDir.East) != TileId.Invalid
+                && SideId(i, j, BaseDir.SE) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.NORTH, BaseDir.South);
+            
+            if (SideId(i, j, BaseDir.North) == TileId.Invalid
+                && SideId(i, j, BaseDir.West) != TileId.Invalid
+                && SideId(i, j, BaseDir.NW) != TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.SW_CORNER, BaseDir.West);
+            
+            if (SideId(i, j, BaseDir.South) == TileId.Invalid
+                && SideId(i, j, BaseDir.East) == TileId.Invalid
+                )
+                AddWall(i, j, tileId, WallFacing.SE_CORNER, BaseDir.South);
+        }
+
+        private TileId SideId(int i, int j, BaseDir dir)
+        {
+            return Id(i, j, GetSideDir(GetOppositeDir(dir)));
+        }
+
+        private void AddWall(
+            int baseI, int baseJ, TileId tileId, WallFacing facing, BaseDir dir = BaseDir.None)
+        {
+            int i = baseI;
+            int j = baseJ;
+            if (dir != BaseDir.None)
+            {
+                var ij = OffsetMap[dir];
+                i -= ij[0];
+                j += ij[1];
+            }
+
+            var wallId = wallRules[tileId];
+
+            Wall wall = Walls[(int)wallId];
+            Wall.WallRenderInfo[] ria = wall.RenderNormal[0];
+            int hoho = ria.Length;
+            hoho = (hoho / 2) - 1;
+
+            byte variation = (byte)rnd.Next(0, hoho);
+
+            if (facing == WallFacing.CROSS
+                || facing == WallFacing.SOUTH_T
+                || facing == WallFacing.EAST_T
+                || facing == WallFacing.NORTH_T
+                || facing == WallFacing.WEST_T
+                || facing == WallFacing.SW_CORNER
+                || facing == WallFacing.NW_CORNER
+                || facing == WallFacing.NE_CORNER
+                || facing == WallFacing.SE_CORNER
+                )
+                variation = 0;
+
+            var timeWall = new MapView.TimeWall
+            {
+                Wall = new Map.Wall(
+                    new Point(i, tile2dMap.GetLength(1) - j - 1), facing, wallId),
+
+                Facing = facing,
+            };
+            timeWall.Wall.Variation = variation;
+
+            if (!res.StoredWalls.Any(x => x.Wall.Location == timeWall.Wall.Location))
+                res.StoredWalls.Add(timeWall);
+        }
+
+        private MapView.TimeTile[,] MakeTile2dMap(Bitmap bitmap)
         {
             usedTileIds = new HashSet<TileId>();
 
             GetColorsAndLocations(
-                out List<Color> colors, out List<Point> locations, out Point pointMin,
+                bitmap, out List<Color> colors, out List<Point> locations, out Point pointMin,
                 out Point pointMax);
 
-            tile2dMap
+            var tile2dMap
                 = new MapView.TimeTile[pointMax.X - pointMin.X + 1, pointMax.Y - pointMin.Y + 1];
 
             for (int i = 0; i < locations.Count; ++i)
@@ -72,12 +224,12 @@ namespace MapEditor.BitmapExport
                 timeTile.EdgeTiles = timeTile.Tile.EdgeTiles;
                 tile2dMap[tilePoint.X, tile2dMap.GetLength(1) - tilePoint.Y - 1] = timeTile;
             }
+            return tile2dMap;
         }
 
 
         private void AddEdges()
         {
-            typeMap = MakeTypeMap(tile2dMap);
             foreach (var firstTileRule in edgeRules)
             {               
                 TileId firstTile = firstTileRule.Key;
@@ -211,6 +363,7 @@ namespace MapEditor.BitmapExport
                 AddEdge(GetTile(i, j), GetTile(i, j, SW), edge, EdgeBaseDir.SW_Tip);
         }
 
+
         private EdgeId EdgeInPair(TileId firstTile, TileId secondTile)
         {
             if (firstTile == secondTile)
@@ -267,9 +420,9 @@ namespace MapEditor.BitmapExport
 
         private TileId Id(int i, int j)
         {
-            if (i < 0 || j < 0 || i >= typeMap.GetLength(0) || j >= typeMap.GetLength(1))
+            if (i < 0 || j < 0 || i >= tileIdMap.GetLength(0) || j >= tileIdMap.GetLength(1))
                 return TileId.Invalid;
-            return typeMap[i, j];
+            return tileIdMap[i, j];
         }
 
         private TileId Id(int baseI, int baseJ, BaseDir dir = BaseDir.None)
@@ -283,8 +436,7 @@ namespace MapEditor.BitmapExport
             return Id(i, j);
         }
 
-        private MapView.TimeTile GetTile(
-            int baseI, int baseJ, BaseDir dir = BaseDir.None)
+        private MapView.TimeTile GetTile(int baseI, int baseJ, BaseDir dir = BaseDir.None)
         {
             int i = baseI;
             int j = baseJ;
@@ -301,9 +453,8 @@ namespace MapEditor.BitmapExport
 
         
 
-        private MapView.TimeContent MakeResultTiles()
+        private void MakeResultTiles()
         {
-            MapView.TimeContent res = new MapView.TimeContent();
             for (int i = 0; i < tile2dMap.GetLength(0); ++i)
             {
                 for (int j = 0; j < tile2dMap.GetLength(1); ++j)
@@ -315,27 +466,6 @@ namespace MapEditor.BitmapExport
                     res.StoredTiles.Add(tile);                  
                 }
             }
-
-            return res;
-        }
-
-        private static TileId[,] MakeTypeMap(MapView.TimeTile[,] tile2dMap)
-        {
-            TileId[,] types = new TileId[tile2dMap.GetLength(0), tile2dMap.GetLength(1)];
-
-            for (int i = 0; i < tile2dMap.GetLength(0); ++i)
-            {
-                for (int j = 0; j < tile2dMap.GetLength(1); ++j)
-                {
-                    var timeTile = tile2dMap[i, j];
-                    if (timeTile == null)
-                        types[i, j] = TileId.Invalid;
-                    else
-                        types[i, j] = timeTile.Tile.graphicId;
-                }
-            }
-
-            return types;
         }
     }
 }
