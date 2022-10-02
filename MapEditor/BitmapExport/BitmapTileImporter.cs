@@ -47,7 +47,8 @@ namespace MapEditor.BitmapExport
             if (wallRules != null)
                 AddWalls();
 
-            res.Location = res.StoredTiles[0].Tile.Location;
+            if (res.StoredTiles.Count > 0)
+                res.Location = res.StoredTiles[0].Tile.Location;
             res.Mode = MapInt.EditMode.WALL_PLACE;
             return res;
         }
