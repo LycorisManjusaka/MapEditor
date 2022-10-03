@@ -19,7 +19,7 @@ namespace MapEditor.BitmapExport
         private HashSet<TileId> usedTileIds;
         private TileId[,] tileIdMap;
         private MapView.TimeTile[,] tile2dMap;
-        private MapView.TimeContent res = new MapView.TimeContent();
+        private readonly MapView.TimeContent res = new MapView.TimeContent();
         private Random rnd = new Random((int)DateTime.Now.Ticks);
 
         public BitmapTileImporter(

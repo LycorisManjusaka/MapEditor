@@ -13,6 +13,7 @@ using MapEditor.render;
 //using MapEditor.noxscript2;
 using MapEditor.newgui;
 using MapEditor.MapInt;
+using static NoxShared.ThingDb;
 
 namespace MapEditor
 {
@@ -120,6 +121,8 @@ namespace MapEditor
                 if (File.Exists(args[0])) MapInterface.SwitchMap(args[0]);
             spl.Close();
         }
+
+
 
         private void MainWindow_KeyDown(object sender, KeyEventArgs e)
         {

@@ -45,6 +45,19 @@ namespace MapEditor.BitmapExport
             return StatisticsToRules(ReadStatistics(filePaths));
         }
 
+        internal static List<string> RulesToLines(Dictionary<TileId, WallId> wallRules)
+        {
+            List<string> res = new List<string>();
+            foreach (var tileItem in wallRules)
+            {
+                var tileId = tileItem.Key;
+                var wallId = tileItem.Value;
+                res.Add(string.Format("{0}\t{1}\t", tileId.ToString(), wallId.ToString()));           
+            }
+
+            return res;
+        }
+
         public static Dictionary<TileId, WallId> StatisticsToRules(string filePath)
         {
             return StatisticsToRules(ReadStatistics(new string[] { filePath }));
@@ -58,6 +71,14 @@ namespace MapEditor.BitmapExport
                 lines.Add(string.Format("{0}\t{1}", rule.Key.ToString(), rule.Value.ToString()));
             }
             File.WriteAllLines(filePath, lines.ToArray());
+        }
+
+        public Dictionary<TileId, WallId> GetRules()
+        {
+            MakeResultLines();
+            var stats = new Dictionary<TileId, Dictionary<WallId, int>>();
+            CollectStatsFromLines(resultLines.ToArray(), ref stats);
+            return MakeRules(stats);
         }
 
         private static List<KeyValuePair<TileId, WallId>> ReadStatistics(string[] filePaths)
@@ -74,7 +95,13 @@ namespace MapEditor.BitmapExport
             string filePath, ref List<KeyValuePair<TileId, WallId>> stats)
         {
             var lines = File.ReadAllLines(filePath);
-            foreach(var line in lines)
+            ReadStatisticsFromLines(lines, ref stats);
+        }
+
+        private static void ReadStatisticsFromLines(
+            string[] lines, ref List<KeyValuePair<TileId, WallId>> stats)
+        {
+            foreach (var line in lines)
             {
                 var words = line.Split(new char[] { '\t' });
                 if (words.Length < 2)
@@ -88,7 +115,38 @@ namespace MapEditor.BitmapExport
         private static Dictionary<TileId, WallId> StatisticsToRules(
             List<KeyValuePair<TileId, WallId>> stats)
         {
+            var counted = StatisticLinesToStats(stats);
+            return MakeRules(counted);
+        }
+
+        private static Dictionary<TileId, WallId> MakeRules(
+            Dictionary<TileId, Dictionary<WallId, int>> counted)
+        {
             var res = new Dictionary<TileId, WallId>();
+            foreach (var tileItems in counted)
+            {
+                var tileId = tileItems.Key;
+                var walls = tileItems.Value;
+                int maxCount = 0;
+                WallId maxCountWallId = WallId.Invalid;
+                foreach (var wallItem in walls)
+                {
+                    var wallId = wallItem.Key;
+                    int count = wallItem.Value;
+                    if (count > maxCount)
+                    {
+                        maxCount = count;
+                        maxCountWallId = wallId;
+                    }
+                }
+                res[tileId] = maxCountWallId;
+            }
+            return res;
+        }
+
+        private static Dictionary<TileId, Dictionary<WallId, int>> StatisticLinesToStats(
+            List<KeyValuePair<TileId, WallId>> stats)
+        {
             var counted = new Dictionary<TileId, Dictionary<WallId, int>>();
             foreach (var item in stats)
             {
@@ -103,26 +161,7 @@ namespace MapEditor.BitmapExport
                 ++counted[item.Key][item.Value];
             }
 
-            foreach (var tileItems in counted)
-            {
-                var tileId = tileItems.Key;
-                var walls = tileItems.Value;
-                int maxCount = 0;
-                WallId maxCountWallId = WallId.Invalid;
-                foreach(var wallItem in walls)
-                {
-                    var wallId = wallItem.Key;
-                    int count = wallItem.Value;
-                    if (count > maxCount)
-                    {
-                        maxCount = count;
-                        maxCountWallId = wallId;
-                    }
-                }
-                res[tileId] = maxCountWallId;
-            }
-
-            return res;
+            return counted;
         }
 
         private static KeyValuePair<TileId, WallId>[,] MakeMap(MapView.TimeContent copiedArea)
@@ -227,6 +266,15 @@ namespace MapEditor.BitmapExport
             if (i < 0 || j < 0 || i >= map.GetLength(0) || j >= map.GetLength(1))
                 return invalid;
             return map[i, j];
+        }
+
+
+        private void CollectStatsFromLines(string[] lines, 
+            ref Dictionary<TileId, Dictionary<WallId, int>> stats)
+        {
+            var statLines = new List<KeyValuePair<TileId, WallId>>();
+            ReadStatisticsFromLines(lines, ref statLines);
+            stats = StatisticLinesToStats(statLines);
         }
     }
 }

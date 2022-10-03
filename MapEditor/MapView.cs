@@ -15,6 +15,7 @@ using System.Linq;
 using MapEditor.BitmapExport;
 using static NoxShared.Map.Tile;
 using System.IO;
+using static NoxShared.ThingDb;
 
 namespace MapEditor
 {
@@ -595,6 +596,8 @@ namespace MapEditor
             if (WallMakeNewCtrl.RecWall.Checked || WallMakeNewCtrl.LineWall.Checked && mouseKeep.IsEmpty && MapInterface.CurrentMode == Mode.WALL_BRUSH)
                 MapInterface.ResetUpdateTracker();
         }
+
+
         private void mapPanel_MouseUp(object sender, MouseEventArgs e)
         {
             mouseMove = false;
@@ -3079,8 +3082,12 @@ namespace MapEditor
                 StoreTiles(poly);
 
                 if (edgeRuleForm.EdgeMakingMode)
-                {
                     edgeRuleForm.EdgeRules = new EdgeAnalizer(CopiedArea).GetRules();
+
+                if (edgeRuleForm.WallMakingMode)
+                {
+                    StoreWalls(poly);
+                    edgeRuleForm.WallRules = new WallAnalizer(CopiedArea).GetRules();
                 }
 
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromTiles());
@@ -3088,7 +3095,6 @@ namespace MapEditor
             else if (tcCopyBitmap.SelectedIndex == 1)
             {
                 StoreWalls(poly);
-                StoreTiles(poly);
                 Clipboard.SetImage(new BitmapExporter(CopiedArea).FromWalls());
             }
 

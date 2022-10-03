@@ -34,7 +34,7 @@ namespace MapEditor
             set
             {
                 wallRules = value;
-                EdgeRulesToText();
+                WallRulesToText();
             }
         }
 
@@ -46,7 +46,17 @@ namespace MapEditor
             isChanging = false;
         }
 
+        private void WallRulesToText()
+        {
+            isChanging = true;
+            var lines = WallAnalizer.RulesToLines(wallRules);
+            tbWallText.Lines = lines.ToArray();
+            isChanging = false;
+        }
+
         public bool EdgeMakingMode => chbEdgeRuleMakingMode.Checked;
+        public bool WallMakingMode => chbWallRuleMakingMode.Checked;
+
         private string RulesDir => Path.GetDirectoryName(Application.ExecutablePath) + "\\Rules";
         public EdgeRuleForm()
         {
