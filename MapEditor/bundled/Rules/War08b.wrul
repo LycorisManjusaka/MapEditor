@@ -1,0 +1,13 @@
+CaveHardBrown	CaveWall2
+DirtHard	CaveWall2
+DirtDark2	CaveWall2
+Water	CaveWall2
+GrassNorm	ConiWall1
+WaterDeep	ConiWall1
+GrassSparse2	ConiWall1
+WaterShallow	InvisibleWallSet
+GrassDense	ConiWall1
+WoodThinSlatDarkREV	InvisibleWallSet
+IxExteriorFacade	InvisibleBlockingWallSet
+Black	BlackWall
+IxTempleInteriorFacade	InvisibleStoneWallSet

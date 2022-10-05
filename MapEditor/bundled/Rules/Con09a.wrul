@@ -1,0 +1,17 @@
+CaveHardTan	CaveWall
+CaveHardBrown	CaveWall
+Water	CaveWall
+SwampGrass	RootLight
+WaterSwampShallow	RootLight
+CaveHardDark	CaveWall
+WeedsSparse	RootLight
+WoodGray	Dilapidated
+WaterSwampDeep	InvisibleWallSet
+WoodDark	InvisibleWallSet
+WoodGray2	OgreWall
+GrassNorm	RootLight
+Black	RootLight
+RugBrown	OgreWall
+GrassSparse2	RootLight
+RedBrick	OgreWall
+GrassSparseYellow	RootLight

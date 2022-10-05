@@ -1,0 +1,13 @@
+Black	BlackWall
+IceFloorDeepBlue	IceWall
+IceFloorDark	IceWall
+LOTDTempleFacade	InvisibleStoneWallSet
+IceFloorRough	IceWall
+IceFloorLight	IceWall
+LOTDDark	IceWall
+CaveHardBrown	CaveWall
+CaveHardTan	CaveWall
+CaveHardDark	ManaMineWall
+ManaMineDirt	ManaMineWall
+WoodGray	CaveWall
+BrickLight	InvisibleBlockingWallSet

@@ -1,0 +1,15 @@
+ManaMineDirt	ManaMineWall
+DirtDark	Log
+WoodGray	Log
+WaterShallow	InvisibleWallSet
+WaterDeep	ManaMineWall
+WoodThinSlatLight	Log
+RedBrick	Log
+GrassNorm	DecidiousWallGreen
+GrassSparse2	ManaMineWall
+RugTan	Log
+WoodThinSlatLightREV	Log
+DirtDark2	Log
+GrassNormYellow	ManaMineWall
+WoodThinSlatDarkREV	Dilapidated
+DirtLight2	DecidiousWallGreen
