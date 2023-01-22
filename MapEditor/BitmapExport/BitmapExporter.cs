@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
-using System.Linq;
-using System.Text;
 
 namespace MapEditor.BitmapExport
 {
-    public class BitmapExporter
+  public class BitmapExporter
     {
         private MapView.TimeContent copiedArea;
 

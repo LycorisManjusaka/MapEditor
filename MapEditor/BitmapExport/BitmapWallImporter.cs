@@ -4,11 +4,10 @@ using System.Drawing;
 using static NoxShared.ThingDb;
 using static MapEditor.BitmapExport.BitmapCommon;
 using System;
-using System.Diagnostics;
 
 namespace MapEditor.BitmapExport
 {
-    public class BitmapWallImporter : BitmapImporter
+  public class BitmapWallImporter : BitmapImporter
     { 
         private readonly Dictionary<Color, WallId> wallColorMap = new Dictionary<Color, WallId>();       
         private WallId[,] typeMap;
